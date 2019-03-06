@@ -10,7 +10,7 @@
   
   <title>
     
-      Hexo
+      Amateur Hour
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -18,16 +18,10 @@
   <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   
-    css('css/plugins/gitment.css')
-  
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
   
-    <script src="/js/qrious.js"></script>
-  
-  
-    <script src="/js/gitment.js"></script>
   
   
   
@@ -64,8 +58,8 @@
     <header class="header fixed-header">
   <div class="header-container">
     <a class="home-link" href="/">
-      <div class="logo"></div>
-      <span>Hexo</span>
+      <!-- <div class="logo"></div> -->
+      <span>Amateur Hour</span>
     </a>
     <ul class="right-list">
       
@@ -84,18 +78,6 @@
         <li class="list-item">
           
             <a href="/archives/" class="item-link">Archives</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/project/" class="item-link">Projects</a>
-          
-        </li>
-      
-        <li class="list-item">
-          
-            <a href="/about/" class="item-link">About</a>
           
         </li>
       
@@ -126,38 +108,12 @@
             
           </li>
         
-          <li class="menu-item">
-            
-              <a href="/project/" class="menu-link">Projects</a>
-            
-          </li>
-        
-          <li class="menu-item">
-            
-              <a href="/about/" class="menu-link">About</a>
-            
-          </li>
-        
       </ul>
     </div>
   </div>
 </header>
 
     <main class="app-body">
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/2019/03/06/hello-world/">Hello World</a>
-      </h2>
-      <p class="article-date">March 6, 2019</p>
-      
-      <div class="article-summary">
-        
-          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer ...
-        
-      </div>
-      <a class="more" href="/2019/03/06/hello-world/">Read more</a>
-    </article>
   
     <article class="article-card">
       <h2 class="article-head">
@@ -182,6 +138,209 @@
         
       </div>
       <a class="more" href="/2019/01/09/pca-1/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/12/16/standardization-normalization/">标准化与归一化 with Scikit-learn</a>
+      </h2>
+      <p class="article-date">December 16, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#feature engineering">
+    <span class="tag-code">feature engineering</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          1. 范数公式范数公式看起来很枯燥，但是对于理解机器学习的各个方面都很重要，包括模型（非常多模型的正则化都是基于范数的）和数据预处理（本文介绍的内容）。因此范数的概念真的是必需牢记。
+范数的数学含义，反正我是没怎么真的搞懂。感兴趣的话，推荐这篇博文讲的挺细致的。对于机器学习来讲，通常理解下面 ...
+        
+      </div>
+      <a class="more" href="/2018/12/16/standardization-normalization/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/11/28/knn-with-10-lines/">10行代码实现kNN（K Nearesr Neighbor）算法</a>
+      </h2>
+      <p class="article-date">November 28, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#modeling">
+    <span class="tag-code">modeling</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          使用 numpy 库，只需 10 行简单的代码就能实现 k 近邻算法。
+算法逻辑对要分类的点（X）进行下列运算：
+
+计算 X 与已知分类的所有点的距离（欧氏距离）；
+距离按照递增排序；
+选取距离最小的 k 个点；
+计算这 k 个点中，每个分类出现的频率；
+取频率最高的分类为预测分类。
+
+代码 ...
+        
+      </div>
+      <a class="more" href="/2018/11/28/knn-with-10-lines/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/11/12/sorted-itemgetter/">Python中sorted方法与operator.itemgetter方法的共用</a>
+      </h2>
+      <p class="article-date">November 12, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#modeling">
+    <span class="tag-code">modeling</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Python中的sorted函数和operator.itemgetter可以说经常一起用，主要是处理一些复杂的排序问题的时候。
+operator.itemgetter函数operator模块提供的itemgetter函数主要用于获取传入对象的特定索引的值，例如：
+123a = [1,2,3] ...
+        
+      </div>
+      <a class="more" href="/2018/11/12/sorted-itemgetter/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/10/14/simple-preprocesing-feature-engineering/">简易数据预处理与特征工程</a>
+      </h2>
+      <p class="article-date">October 14, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#feature engineering">
+    <span class="tag-code">feature engineering</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Intro使用鸢尾花数据集：
+123456from sklearn.datasets import load_irisdata = load_iris()features = data.datalabels = data.target
+其中features是特征矩阵，labels是真实分类。 ...
+        
+      </div>
+      <a class="more" href="/2018/10/14/simple-preprocesing-feature-engineering/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/09/27/more-than-lr-2/">不只是线性回归（2）：多重共线性与正则化</a>
+      </h2>
+      <p class="article-date">September 27, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#modeling">
+    <span class="tag-code">modeling</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Intro线性回归（Linear Regression）是机器学习的基本方式，但为了提升其性能，人们发明了无数优化方式。这个“不只是线性回归”系列就是为了记录我在日常的学习中发现的，不只是简单的线性回归的算法、优化方式、数学原理等。
+2. 多重共线性（Multicollinearity）2. ...
+        
+      </div>
+      <a class="more" href="/2018/09/27/more-than-lr-2/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/08/01/more-than-lr-1/">不只是线性回归（1）：稳健回归</a>
+      </h2>
+      <p class="article-date">August 1, 2018</p>
+      
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#modeling">
+    <span class="tag-code">modeling</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Intro线性回归（Linear Regression）是机器学习的基本方式，但为了提升其性能，人们发明了无数优化方式。这个“不只是线性回归”系列就是为了记录我在日常的学习中发现的，不只是简单的线性回归的算法、优化方式、数学原理等。
+1. 稳健回归（Robust Regression）稳健回 ...
+        
+      </div>
+      <a class="more" href="/2018/08/01/more-than-lr-1/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/07/21/mle-mle-bayes/">最大似然估计、最大后验概率与贝叶斯估计</a>
+      </h2>
+      <p class="article-date">July 21, 2018</p>
+      
+        
+  <a href="/tags#statistics">
+    <span class="tag-code">statistics</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Intro众所周知，机器学习的过程一般分两个要点，第一是“模型”，第二是“优化”。“模型”这一点很好理解，就是要找到适合用于解决手头上预测问题的模型。机器学习训练过程的核心在于“优化”。而训练（trianing）一般可以分成以下几个步骤：
+
+定义假设空间H：即选择模型，不同的模型对应的就是不 ...
+        
+      </div>
+      <a class="more" href="/2018/07/21/mle-mle-bayes/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/2018/05/09/fintech-user-growth-model/">互联网金融产品用户增长模型</a>
+      </h2>
+      <p class="article-date">May 9, 2018</p>
+      
+        
+  <a href="/tags#growth">
+    <span class="tag-code">growth</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          Intro最近很集中地系统梳理了互金理财行业在用户增长（Growth）方面的 methodology 与 practice，尝试以文章的形式予以框架性地总结，也算是给自己这段时间的学习做一个沉淀，当然也希望能够帮到其他对互金用户增长有兴趣的同学们。
+用户增长，或者以更现（zhuang）代（b ...
+        
+      </div>
+      <a class="more" href="/2018/05/09/fintech-user-growth-model/">Read more</a>
     </article>
   
 

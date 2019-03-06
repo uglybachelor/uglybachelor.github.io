@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      最大似然估计、最大后验概率与贝叶斯估计 | Amateur Hour
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <!-- <div class="logo"></div> -->
+      <span>Amateur Hour</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>最大似然估计、最大后验概率与贝叶斯估计</h2>
+  <p class="post-date">2018-07-21</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h1><p>众所周知，机器学习的过程一般分两个要点，第一是“模型”，第二是“优化”。“模型”这一点很好理解，就是要找到适合用于解决手头上预测问题的模型。机器学习训练过程的核心在于“优化”。而训练（trianing）一般可以分成以下几个步骤：</p>
+<ul>
+<li>定义假设空间H：即选择模型，不同的模型对应的就是不同的假设空间。</li>
+<li>定义损失函数：选择合适的损失函数，来衡量每次训练迭代的效果。比如MSE、LogLoss等。</li>
+<li>决定训练复杂度：决定用什么样的正则化，预防过拟合。</li>
+<li>定义优化算法：在训练迭代中，使用什么算法来得到模型参数最优解。例如梯度下降、MCMC等。</li>
+<li>验证结果：在测试集上使用前几步输出的模型，验证预测结果的有效性。</li>
+</ul>
+<p>本文主要讨论优化算法部分最常见的三种策略：<strong>最大似然估计-MLE、最大后验概率-MAP、贝叶斯估计—Bayesian</strong>。</p>
+<h2 id="1-似然函数-amp-贝叶斯公式"><a href="#1-似然函数-amp-贝叶斯公式" class="headerlink" title="1. 似然函数 &amp; 贝叶斯公式"></a>1. 似然函数 &amp; 贝叶斯公式</h2><p>先说<a href="https://zh.wikipedia.org/wiki/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0" target="_blank" rel="noopener">似然函数</a>吧，学过概率论的同学们，看到这个公式肯定都不陌生：</p>
+<p>$$P(A|B)$$ </p>
+<p>但我们学的时候多半是按概率函数来理解的，但其实他也可以按似然函数来理解。作为概率函数，这个公式的含义是：B 代表已知的条件，P(A|B) 代表在 B 这个已知的条件下 A 发生的概率。</p>
+<p>但对于似然函数有着完全相反的理解：B 代表不同的模型参数，P(A|B) 是指在不同模型参数下，固定的 A 发生的概率。</p>
+<blockquote>
+<p>当然，对于似然函数来说，更常见的写法可能是 $$P(x|\theta)$$，其中 x 是数据集中的样本点，theta 是模型参数的意思。</p>
+</blockquote>
+<p><a href="https://zh.wikipedia.org/zh-hans/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86" target="_blank" rel="noopener">贝叶斯公式</a>，可能也是机器学习初学者一定要过的一关。但我在初学的时候，完全没有get到这个公式对于机器学习的意义。直到我把今天要讨论的三个优化策略放在一起对比。要理解贝叶斯公式本身，首先还是要有一点概率基础。首先贝叶斯公式形状如下：</p>
+<p>$$P(A|B) = P(B|A)*P(A)/P(B)$$</p>
+<p>一言以蔽之，贝叶斯定理是关于随机事件A和B的条件概率的一则定理。把公式中的四项全部拆开来看呢，分别是这样的定义：</p>
+<ul>
+<li>P(A) 是 A 的先验概率。之所以称为”先验”是因为它不考虑任何 B 方面的因素</li>
+<li>P(A|B) 是已知 B 发生后 A 的条件概率，也由于得自 B 的取值而被称作 A 的后验概率</li>
+<li>P(B|A) 是已知 A 发生后 B 的条件概率，通常称为相似度（likelihood）</li>
+<li>P(B) 是 B 的先验概率或边缘概率，也作标准化常量（normalized constant）</li>
+</ul>
+<p>转化一下之后，贝叶斯定理可以理解为：</p>
+<blockquote>
+<p>后验概率 = (相似度 * 先验概率) / 标准化常量</p>
+</blockquote>
+<p>本文后面讨论的三个策略，跟以上两个公式的理解，都有非常大的关系。</p>
+<h2 id="2-最大似然估计-MLE"><a href="#2-最大似然估计-MLE" class="headerlink" title="2. 最大似然估计 - MLE"></a>2. 最大似然估计 - MLE</h2><p><a href="https://zh.wikipedia.org/zh-hans/%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1" target="_blank" rel="noopener">最大似然估计</a>，是三者中最简单页也最好理解的一种。直白点讲，它其实就是贝叶斯定理中“相似度”那一项 P(B|A)。因此得名最大（maximum）似然（likelihood），其实就是要找到这一项的最大值所对应的模型参数。</p>
+<p>以一个教科书式的例子来说明好了，假设我们有一枚硬币，我们不知道它是否均匀，想通过N次抛掷，然后记录正反面出现的概率来决定。于是我们对它进行了10次抛掷，最后结果是：7次正面、3次反面。如果一个人秉持最大似然估计的想法来得出这个问题的结论的话，那他的结论会是：这个硬币不均匀，正面出现的概率是 0.7 ，反面是 0.3。</p>
+<p>但其实常识告诉我们，10次中有7次正面，其实只是运气不好。如果再抛掷10次，没准就7次反面了。所以肯定没有人会相信上面这个结论。但我们如何改进呢？抛掷更多次当然是一个选项，但在建模过程中，数据量通常是固定的，要获取更多的数据一般是不大现实的。因此，我们需要另辟蹊径。就像刚刚说到的，常识会告诉我们这个结论明显有问题。那有没有办法把这个“常识”作为一个因子引入到我们的模型里呢？当然可以，它其实就是“先验概率”。这就引出了下面要讨论的“最大后验概率”。</p>
+<h2 id="3-最大后验概率-MAP"><a href="#3-最大后验概率-MAP" class="headerlink" title="3. 最大后验概率 - MAP"></a>3. 最大后验概率 - MAP</h2><p>最大似然估计是求参数 theta, 使似然函数 P(x|theta)最大。最大后验概率估计则是想求 theta 使 P(x|theta)P(theta) 最大。求得的 theta 不单单让似然函数大，theta 自己出现的先验概率也得大。在贝叶斯公式中：P(theta|x) = P((x|theta)*P(theta)/P(x)，由于 P(x) 是已知的观测结果，所以可以理解为是常量，在上面的例子中也就是正面0.7这个概率值。因此求 theta 使 P(x|theta)P(theta) 最大，就是求 theta 使 P(theta|x) 最大。而 P(theta|x) 就是后验概率，也是这个策略名称的由来。</p>
+<p>那么，如果我们先验地知道，正面概率更接近 0.5 这件事情，那其实最终得出的后验概率，肯定介于似然估计的 0.7 与 先验概率的 0.5 之间。因此，可以看出引入了先验概率之后，我们的模型能够更接近真相。</p>
+<p>如果再更深入的思考一下，其实 MLE 和 MAP 是有关联的，如果 P(theta) = 1，其实 MAP 就是 MLE。或者反过来看，当数据观测趋于无穷大时，似然估计本身提供的信息将远超于先验概率提供的信息，这时 MLE 和 MAP 也是基本一样的。</p>
+<h2 id="4-贝叶斯估计-Bayesian"><a href="#4-贝叶斯估计-Bayesian" class="headerlink" title="4. 贝叶斯估计 - Bayesian"></a>4. 贝叶斯估计 - Bayesian</h2><p>现在让我们回想一下上面的 MLE 与 MAP。我们会发现，这两个策略的最终目的，都是找到一个最好的描述当前数据观测的模型。他们其实都属于“频率论（frequentist）”的思路。但“贝叶斯思想”是与频率论完全背道而驰的一种观点。<a href="https://zh.wikipedia.org/wiki/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%8E%A8%E6%96%AD" target="_blank" rel="noopener">贝叶斯估计</a>的过程中，不会试图去寻找一个最佳的模型，而是得出所有参数可能性的重要性分布。当我们对新的样本预测的时候，就会让所有的模型一起去预测，但每个模型会有自己的权重（权重就是学出来的分布）。最终的决策由所有的估计根据其权重做出决策。是类似于ensemble的做法。</p>
+<p>上面的解释可以说肯定一遍是看不懂了，在<a href="https://yuanxiaosc.github.io/2018/06/20/%E8%B4%9D%E5%8F%B6%E6%96%AF%E4%BC%B0%E8%AE%A1%E3%80%81%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1%E3%80%81%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E4%BC%B0%E8%AE%A1%E4%B8%89%E8%80%85%E7%9A%84%E5%8C%BA%E5%88%AB/" target="_blank" rel="noopener">这篇博文</a>中有个非常好的例子，盗用一下。</p>
+<p>假设你有一个学术问题想要解决的时候，你可以联系到一个清华大学的班级，班里的同学可以帮助你去解决这个问题。这时候，你会怎么样利用这些学生来解决这个问题呢？我们可以分别用今天讨论的三个策略来套用到这个场景中。很显然，这个班级就是你的假设空间，班级中每个人都可能的一个模型实例。</p>
+<h4 id="最大似然估计的approach"><a href="#最大似然估计的approach" class="headerlink" title="最大似然估计的approach"></a>最大似然估计的approach</h4><p>按 MLE 的原理，你需要从系里选出过往成绩最好的学生，并让他去解答这个难题。比如我们可以选择过去三次考试中成绩最优秀的学生。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-781851bba10597fb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mle_1.png"></p>
+<p>挑选出这些学生之后，就直接让他们去解决问题并给出结果了。其他的学生我们就当不存在。。。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-cf61ee8907ebf144.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mle_2.png"></p>
+<p>这是一个很好的approach吗？是很简单，但明显很sloppy。万一这些学生只是考试厉害，实际的问题解决能力并不强呢？这个时候，请教一下他们的班主任、老师对他们的评价，也纳入到你的考虑中岂不是更好。这就是最大后验概率估计。</p>
+<h4 id="最大后验概率的approach"><a href="#最大后验概率的approach" class="headerlink" title="最大后验概率的approach"></a>最大后验概率的approach</h4><p>老师的评价作为先验概率，加入到我们的考虑中，对同学的选择当然会产生影响。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-59ab57a6c8371c18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="map_1.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-762a6d5b6de7f95e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="map_2.png"></p>
+<h4 id="贝叶斯估计的approach"><a href="#贝叶斯估计的approach" class="headerlink" title="贝叶斯估计的approach"></a>贝叶斯估计的approach</h4><p>贝叶斯估计的方法，是让所有人都去参与回答张三的难题，但最后我们通过一些加权平均的方式获得最终的答案。这里你不是简单地选出几个同学，而是给每一个同学分配一个权值。权值的分布（Posterior Distribution）是怎么得出的呢？一些著名的算法如MCMC, Variational Method等等。</p>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><ol>
+<li>MLE（最大似然估计）：就是给定一个模型的参数，然后试着最大化likelihood。即给定参数的情况下，得到样本集的概率。目标是找到使前面概率最大的参数。逻辑回归都是基于 MLE 做的；但缺点是不会把我们的先验知识加入模型中。</li>
+<li>MAP（最大后验估计）：最大化后验概率。</li>
+<li>Bayesian：预测是考虑了所有可能的参数，即所有的参数空间。</li>
+</ol>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#statistics">
+    <span class="tag-code">statistics</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/05/09/fintech-user-growth-model/">
+        <span class="nav-arrow">← </span>
+        
+          互联网金融产品用户增长模型
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/08/01/more-than-lr-1/">
+        
+          不只是线性回归（1）：稳健回归
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Intro"><span class="toc-nav-text">Intro</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-似然函数-amp-贝叶斯公式"><span class="toc-nav-text">1. 似然函数 &amp; 贝叶斯公式</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-最大似然估计-MLE"><span class="toc-nav-text">2. 最大似然估计 - MLE</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-最大后验概率-MAP"><span class="toc-nav-text">3. 最大后验概率 - MAP</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-贝叶斯估计-Bayesian"><span class="toc-nav-text">4. 贝叶斯估计 - Bayesian</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#最大似然估计的approach"><span class="toc-nav-text">最大似然估计的approach</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#最大后验概率的approach"><span class="toc-nav-text">最大后验概率的approach</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#贝叶斯估计的approach"><span class="toc-nav-text">贝叶斯估计的approach</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Summary"><span class="toc-nav-text">Summary</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/07/21/mle-mle-bayes/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

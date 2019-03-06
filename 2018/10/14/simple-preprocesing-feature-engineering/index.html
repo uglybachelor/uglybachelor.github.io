@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      简易数据预处理与特征工程 | Amateur Hour
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <!-- <div class="logo"></div> -->
+      <span>Amateur Hour</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>简易数据预处理与特征工程</h2>
+  <p class="post-date">2018-10-14</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>使用鸢尾花数据集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.datasets import load_iris</span><br><span class="line"></span><br><span class="line">data = load_iris()</span><br><span class="line"></span><br><span class="line">features = data.data</span><br><span class="line">labels = data.target</span><br></pre></td></tr></table></figure>
+<p>其中<code>features</code>是特征矩阵，<code>labels</code>是真实分类。</p>
+<h2 id="1-预处理（preprocessing）"><a href="#1-预处理（preprocessing）" class="headerlink" title="1. 预处理（preprocessing）"></a>1. 预处理（preprocessing）</h2><h4 id="1-1-预处理的目的"><a href="#1-1-预处理的目的" class="headerlink" title="1.1 预处理的目的"></a>1.1 预处理的目的</h4><p>数据预处理的目的在于：使得特征数据在处理后，能让学习模型得到更好的效果。预处理通常会解决原始数据存在的如下问题：</p>
+<ul>
+<li>量纲不同：比如可能存在两个特征，都是“长度”，但其中一个以千米为单位，一个以毫米为单位。直接让模型去学习这两个特征，明显是不科学的。</li>
+<li>信息冗余：经常会有好几个特征表达同一个含义；或者某个特征过于具体或连续，但其实我们只需要一个区段标记或者“是”与“否”的标记。</li>
+<li>定性（Categorical）的特征：比如国籍、XX状态等，需要处理成数值编码才可以被学习。</li>
+<li>缺失值。</li>
+</ul>
+<p>下面具体地介绍几种预处理的手段：</p>
+<h4 id="1-2-无量纲化"><a href="#1-2-无量纲化" class="headerlink" title="1.2 无量纲化"></a>1.2 无量纲化</h4><p><strong>1.2.1 标准化（standardization)</strong></p>
+<p>常用的z-score标准化计算公式：</p>
+<p>$$x’ = \frac{x - \bar{X}}{S} $$</p>
+<p>在sklearn库中，实现标准化的类是：StandardScaler。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import StandardScaler</span><br><span class="line"></span><br><span class="line">StandardScaler().fit_transform(features)</span><br></pre></td></tr></table></figure></p>
+<p>可以对比下转换前和转换后，第一行数据的形态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 转换前</span><br><span class="line">[5.1, 3.5, 1.4, 0.2]</span><br><span class="line"></span><br><span class="line"># 转换后</span><br><span class="line">[-9.00681170e-01,  1.03205722e+00, -1.34127240e+00, -1.31297673e+00]</span><br></pre></td></tr></table></figure>
+<p><strong>1.2.2 最大-最小值缩放（min-max scaler)</strong></p>
+<p>其实区间缩放的方式不止最大-最小值这一种，但这是最常用的一种，也是归一化方式的一种。公式如下：</p>
+<p>$$x’ = \frac{x - Min}{Max - Min}$$</p>
+<p>sklearn中实现的类为MinMaxScaler：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import MinMaxScaler</span><br><span class="line"></span><br><span class="line">MinMaxScaler().fit_transform(features)</span><br></pre></td></tr></table></figure>
+<p>转换后特征变成 [0, 1] 区间内的数值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 转换后</span><br><span class="line">[0.22222222, 0.625, 0.06779661, 0.04166667]</span><br></pre></td></tr></table></figure>
+<p><strong>1.2.2 L2归一化（L2 Normalization)</strong></p>
+<p>其实上面的最大-最小值缩放也是归一化的一种，但通常说归一化，指的还是L2的归一化方式。公式如下：</p>
+<p>$$x’ = \frac{x}{\sqrt{\sum{x[j]^2}}}$$</p>
+<p>特征转换后得到的也是 [0, 1] 区间内的数值。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import Normalizer</span><br><span class="line"></span><br><span class="line">Normalizer().fit_transform(features)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 转换后</span><br><span class="line">[0.80377277, 0.55160877, 0.22064351, 0.0315205 ]</span><br></pre></td></tr></table></figure>
+<p>标准化与归一化的区别在于：标准化是对一个特征的所有值求z-score，它并不会改变整个特征的分布。而归一化是对一个数据点做处理，得到的是一个更好的新的分布。</p>
+<h4 id="1-3-哑编码-独热编码"><a href="#1-3-哑编码-独热编码" class="headerlink" title="1.3 哑编码/独热编码"></a>1.3 哑编码/独热编码</h4><p>定性（categorical）的特征无法直接被学习器学习，必需先转换成数值型的编码。哑编码是最常用的方式，在sklearn中有OneHotEncoder类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import OneHotEncoder</span><br><span class="line"></span><br><span class="line">OneHotEncoder().fit_transform(labels.reshape(-1, 1))</span><br></pre></td></tr></table></figure>
+<h4 id="1-4-基于多项式的变换"><a href="#1-4-基于多项式的变换" class="headerlink" title="1.4 基于多项式的变换"></a>1.4 基于多项式的变换</h4><p>数据变换，总体来说就是根据一定的规律造指标。这里介绍的是多项式，其实还可以基于指数函数或者log函数。多项式变换的核心在于“度”（degree）的选择，选择正确的度对于运算复杂度和最终预测结果都有很大的影响。</p>
+<p>sklearn用于实现变换的类为：PolynomialFeatures。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.preprocessing import PolynomialFeatures</span><br><span class="line"></span><br><span class="line"># 其实可定义参数degree，默认值为2</span><br><span class="line">PolynomialFeatures().fit_transform(features)</span><br></pre></td></tr></table></figure>
+<h2 id="2-特征选择"><a href="#2-特征选择" class="headerlink" title="2. 特征选择"></a>2. 特征选择</h2><p>对特征数据的预处理只是第一步，在实际输入到学习器之前，还需要对特征的必要性进行排查。不必要的特征需要删除。</p>
+<p>特征的选择通常从两方面来考虑：</p>
+<ol>
+<li>特征方差取值：方差大的特征更具有选择性。</li>
+<li>特征相关性：与label相关性越强的特征越好。</li>
+</ol>
+<p>下面介绍三种常用的特征选择操作。</p>
+<h4 id="2-1-过滤（Filter）"><a href="#2-1-过滤（Filter）" class="headerlink" title="2.1 过滤（Filter）"></a>2.1 过滤（Filter）</h4><p><strong>2.1.1 方差过滤</strong></p>
+<p>单独计算每个特征的方差，设定阈值并只保留大于阈值的特征。在sklearn中是使用feature_selection库的VarianceThreshold类来实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import VarianceThreshold</span><br><span class="line"></span><br><span class="line"># threshold就是阈值</span><br><span class="line">VarianceThreshold(threshold=3).fit_transform(features)</span><br></pre></td></tr></table></figure>
+<p><strong>2.1.2 相关系数过滤</strong></p>
+<p>计算各个特征对目标值的相关系数以及相关系数的P值。用feature_selection库的SelectKBest类结合相关系数来选择特征的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import SelectKBest</span><br><span class="line">from scipy.stats import pearsonr</span><br><span class="line"></span><br><span class="line">SelectKBest(lambda X, Y: array(map(lambda x: pearsonr(x, Y), X.T)).T, k=2).fit_transform(features, labels)</span><br></pre></td></tr></table></figure>
+<p><strong>2.1.3 卡方检验过滤</strong></p>
+<p>经典的卡方检验是检验定性自变量对定性因变量的相关性。假设自变量有N种取值，因变量有M种取值，考虑自变量等于i且因变量等于j的样本频数的观察值与期望的差距。</p>
+<p>用feature_selection库的SelectKBest类结合卡方检验来选择特征的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import SelectKBest</span><br><span class="line">from sklearn.feature_selection import chi2</span><br><span class="line"></span><br><span class="line"># 选择K个最好的特征，返回选择特征后的数据</span><br><span class="line">SelectKBest(chi2, k=2).fit_transform(features, labels)</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-包裹（Wrapper）"><a href="#2-2-包裹（Wrapper）" class="headerlink" title="2.2 包裹（Wrapper）"></a>2.2 包裹（Wrapper）</h4><p><strong>2.2.1 递归特征消除</strong></p>
+<p>递归消除特征法使用一个基模型来进行多轮训练，每轮训练后，消除若干权值系数的特征，再基于新的特征集进行下一轮训练。使用feature_selection库的RFE类来选择特征的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.feature_selection import RFE</span><br><span class="line">from sklearn.linear_model import LogisticRegression</span><br><span class="line"></span><br><span class="line">#递归特征消除法，返回特征选择后的数据</span><br><span class="line">#参数estimator为基模型</span><br><span class="line">#参数n_features_to_select为选择的特征个数</span><br><span class="line">RFE(estimator=LogisticRegression(), n_features_to_select=2).fit_transform(features, labels)</span><br></pre></td></tr></table></figure>
+<h2 id="3-特征降维"><a href="#3-特征降维" class="headerlink" title="3. 特征降维"></a>3. 特征降维</h2><p>当特征选择完成后，可以直接训练模型了，但是可能由于特征矩阵过大，导致计算量大，训练时间长的问题，因此降低特征矩阵维度也是必不可少的。常见的降维方法除了以上提到的基于L1惩罚项的模型以外，另外还有主成分分析法（PCA）和线性判别分析（LDA），线性判别分析本身也是一个分类模型。PCA和LDA有很多的相似点，其本质是要将原始的样本映射到维度更低的样本空间中，但是PCA和LDA的映射目标不一样：PCA是为了让映射后的样本具有最大的发散性；而LDA是为了让映射后的样本有最好的分类性能。所以说PCA是一种无监督的降维方法，而LDA是一种有监督的降维方法。</p>
+<h4 id="3-1-主成分分析（PCA）"><a href="#3-1-主成分分析（PCA）" class="headerlink" title="3.1 主成分分析（PCA）"></a>3.1 主成分分析（PCA）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.decomposition import PCA</span><br><span class="line"></span><br><span class="line"># 主成分分析法，返回降维后的数据</span><br><span class="line"># 参数n_components为主成分数目</span><br><span class="line">PCA(n_components=2).fit_transform(features)</span><br></pre></td></tr></table></figure>
+<h4 id="3-2-线性判别（LDA）"><a href="#3-2-线性判别（LDA）" class="headerlink" title="3.2 线性判别（LDA）"></a>3.2 线性判别（LDA）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from sklearn.lda import LDA</span><br><span class="line"></span><br><span class="line"># 线性判别分析法，返回降维后的数据</span><br><span class="line"># 参数n_components为降维后的维数</span><br><span class="line">LDA(n_components=2).fit_transform(features, labels)</span><br></pre></td></tr></table></figure>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#feature engineering">
+    <span class="tag-code">feature engineering</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2018/09/27/more-than-lr-2/">
+        <span class="nav-arrow">← </span>
+        
+          不只是线性回归（2）：多重共线性与正则化
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/2018/11/12/sorted-itemgetter/">
+        
+          Python中sorted方法与operator.itemgetter方法的共用
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Intro"><span class="toc-nav-text">Intro</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-预处理（preprocessing）"><span class="toc-nav-text">1. 预处理（preprocessing）</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-1-预处理的目的"><span class="toc-nav-text">1.1 预处理的目的</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-2-无量纲化"><span class="toc-nav-text">1.2 无量纲化</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-3-哑编码-独热编码"><span class="toc-nav-text">1.3 哑编码/独热编码</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-4-基于多项式的变换"><span class="toc-nav-text">1.4 基于多项式的变换</span></a></li></ol></li></ol><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-特征选择"><span class="toc-nav-text">2. 特征选择</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#2-1-过滤（Filter）"><span class="toc-nav-text">2.1 过滤（Filter）</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#2-2-包裹（Wrapper）"><span class="toc-nav-text">2.2 包裹（Wrapper）</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-特征降维"><span class="toc-nav-text">3. 特征降维</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#3-1-主成分分析（PCA）"><span class="toc-nav-text">3.1 主成分分析（PCA）</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#3-2-线性判别（LDA）"><span class="toc-nav-text">3.2 线性判别（LDA）</span></a></li></ol></li>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/10/14/simple-preprocesing-feature-engineering/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>

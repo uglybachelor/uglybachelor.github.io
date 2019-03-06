@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      互联网金融产品用户增长模型 | Amateur Hour
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <!-- <div class="logo"></div> -->
+      <span>Amateur Hour</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>互联网金融产品用户增长模型</h2>
+  <p class="post-date">2018-05-09</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>最近很集中地系统梳理了互金理财行业在用户增长（Growth）方面的 methodology 与 practice，尝试以文章的形式予以框架性地总结，也算是给自己这段时间的学习做一个沉淀，当然也希望能够帮到其他对互金用户增长有兴趣的同学们。</p>
+<p>用户增长，或者以更现（zhuang）代（bi）的名字称呼为“Growth Hacking”，从诞生之日起就与数据结下了强烈的关系。为什么呢？请参考 Wikipedia 对“Growth Hacking”的定义。</p>
+<blockquote>
+<p>“Growth hacking is a process of rapid experimentation across marketing funnel, product development, sales segments, and other areas of the business to identify the most efficient ways to grow a business.”</p>
+</blockquote>
+<p>关键词在于：<code>experimentation</code>和<code>identity</code>。很自然地可以理解到，没有数据的支撑，如何决定<code>experimentation</code>的迭代方向，又如何决定<code>identity</code>的阈值、界限？数据，或者说<code>Measurement</code>，是“Growth Hacking”工作流程中最重要的因素。就和最简单的梯度下降线性回归模型一样，计算出了梯度下降的方向，才有模型的收敛。</p>
+<blockquote>
+<p>“无迭代，不增长。而迭代的方向，由数据决定”</p>
+</blockquote>
+<p>我们今天所熟悉的“互联网金融”一词的概念，其实只是金融行业数字化的初级阶段。但它的出现已经带来了大众对金融的理解的天翻地覆的变化。新的技术带来了新的生态，又带了新的企业与商业模式。今天我想专注 <strong>理财投资方面的互联网金融公司的用户运营数据模型</strong> 这一微小的命题，记录一些我的理解。</p>
+<h2 id="1-互金（理财）的用户运营"><a href="#1-互金（理财）的用户运营" class="headerlink" title="1. 互金（理财）的用户运营"></a>1. 互金（理财）的用户运营</h2><p>先说结论：互金（理财）的用户运营，本质上就是数据驱动的促进用户增长过程。</p>
+<p>如果我们问一名普通的互金公司运营同学：互金的运营是在做什么？我相信他的回答不会偏离以下这段话很多：通过各种运营手段，比如红包、补贴、加息券等，对处于生命周期各阶段的用户，进行转化、促活、召回等工作。大部分互金运营的日常工作就是这些，但从这个工作里就可以提炼出很多需要数据支撑的地方，例如运营的目标用户是谁、如何判断用户的生命周期、如何决定一个用户的流失风险等等。没有数据说话，这些策略只能是拍脑袋的 guess work。这就引出了我想讨论的第一个问题：互金运营需要看哪些数据？</p>
+<h3 id="1-1-互金用户运营需要看哪些数据？"><a href="#1-1-互金用户运营需要看哪些数据？" class="headerlink" title="1.1 互金用户运营需要看哪些数据？"></a>1.1 互金用户运营需要看哪些数据？</h3><p>同样先上结论：用户行为数据 + 用户属性数据 + 交易数据。</p>
+<p>下面分别解释下它们的范畴：</p>
+<h4 id="1-1-1-用户行为数据："><a href="#1-1-1-用户行为数据：" class="headerlink" title="1.1.1 用户行为数据："></a>1.1.1 用户行为数据：</h4><p>这一听就是一个非常广的范畴，但其实可以做进一步的细化拆分成以下三个层次：</p>
+<ul>
+<li><p>节点行为数据</p>
+</li>
+<li><p>节点转化数据</p>
+</li>
+<li><p>行为偏好数据</p>
+</li>
+</ul>
+<p>先说说 “节点行为数据” 吧，其实就是指用户在整个转化流程中的各个节点的行为表现，对于每个用户是多个定量的值。例如：</p>
+<ul>
+<li><p>下载</p>
+</li>
+<li><p>注册/实名认证</p>
+</li>
+<li><p>绑卡</p>
+</li>
+<li><p>首投</p>
+</li>
+<li><p>复投</p>
+</li>
+<li><p>分享</p>
+</li>
+</ul>
+<p>等等。但以上几个其实就是互金通常关注的转化节点，这部分用户的行为数据是其他所有行为数据的基础，哪怕不做进一步归纳，也一定需要采集入库。此类数据的采集通常是通过客户端埋点（tagging）的方式，在用户行为发生时触发埋点代码上传行为标签以及相关用户、访问（session）、页面的信息。</p>
+<p>再说 “节点转化数据”，顾名思义，节点转化数据就是用户在上述行为节点中的的单点转化情况。主要包括：</p>
+<ul>
+<li><p>已下载未注册</p>
+</li>
+<li><p>已注册未绑卡</p>
+</li>
+<li><p>已绑卡未首投</p>
+</li>
+<li><p>已首投未复投</p>
+</li>
+<li><p>已复投未N投</p>
+</li>
+<li><p>已投资未分享</p>
+</li>
+</ul>
+<p>这些行为数据代表用户在平台生命周期里的进展，是后续讨论的 <strong>用户生命周期模型</strong> 的数据 base 之一。这些数据的获取需要基于节点行为数据，通过具体节点行为标签的匹配，来确认用户转化与否。</p>
+<p>最后谈到 “行为偏好数据”，它需要能够体现用户在平台内对于功能或内容的偏好，对于互金理财类平台，通常是：</p>
+<ul>
+<li><p>有无投资行为</p>
+</li>
+<li><p>风险敏感度</p>
+</li>
+<li><p>收益敏感度</p>
+</li>
+<li><p>流动性敏感度</p>
+</li>
+<li><p>品类敏感度</p>
+</li>
+<li><p>活动敏感度</p>
+</li>
+</ul>
+<p>行为偏好在用户运营中无疑也是非常重要，从活动策略到目标人群推送，都需要考虑用户对平台内容投资的倾向。</p>
+<h4 id="1-1-2-用户属性数据："><a href="#1-1-2-用户属性数据：" class="headerlink" title="1.1.2 用户属性数据："></a>1.1.2 用户属性数据：</h4><p>是指用户本身在行为之外的固有属性.通常包括：性别、年龄、生活城市级别（来自调研）、收入水平（来自调研）、婚育状况（来自调研）、来源渠道等等。这些数据一部分来源于用户在注册时备案的信息，另一部分需要来源于用户调研、问卷等。</p>
+<h4 id="1-1-3-交易数据："><a href="#1-1-3-交易数据：" class="headerlink" title="1.1.3 交易数据："></a>1.1.3 交易数据：</h4><p>主要是用户在平台内的投资成果，一般来说至少需要包括：</p>
+<ul>
+<li><p>持仓产品数量</p>
+</li>
+<li><p>持仓产品品类</p>
+</li>
+<li><p>持仓产品市值</p>
+</li>
+<li><p>盈亏</p>
+</li>
+</ul>
+<p>这些数据反映了用户的投资粘性、投资能力区段，并且也是计算用户生命周期价值（Life Time Value）的基础数据。结合 RFM 模型分析，对于用户潜在价值判断和运营策略都有非常直观的指导意义。这些数据通常只能来源互金公司本身的数据中心。</p>
+<h3 id="1-2-互金用户增长的基本策略"><a href="#1-2-互金用户增长的基本策略" class="headerlink" title="1.2 互金用户增长的基本策略"></a>1.2 互金用户增长的基本策略</h3><p>假设我们已经取得了上面所有数据，如何建立有效的工作机制，在正确的工作节点取得正确的数据而得出正确的运营策略，是每个互金运营同学都需要参透的一件事情。在我看来，互金用户增长的基本策略不外乎两大块：</p>
+<ul>
+<li><p>建立清晰的转化漏斗，找到关键节点及节点的最小任务闭环并优化；</p>
+</li>
+<li><p>建立用户生命周期，据此对用户进行分群，进而针对不同生命周期的用户制定差异化的运营策略。</p>
+</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-afcef86ded608a91.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>这两块基本策略其实也对应了接下来要讨论的两大模型。一个运营不可能不清晰地知道用户在生命周期转化闭环中需要经过的每个最小的任务节点，他/她更要找到转化率的瓶颈，并优先去优化这个瓶颈的最小任务闭环。一个运营也必需明确地知道自己的用户在不同生命周期阶段里的分布以及变化趋势，才能有效的通过各种手段完成促活和留存任务。</p>
+<h2 id="2-两大互金用户增长模型"><a href="#2-两大互金用户增长模型" class="headerlink" title="2. 两大互金用户增长模型"></a>2. 两大互金用户增长模型</h2><p>从上一节提到的用户增长的基本策略，就可以看出增长模型一定也是基于 转化漏斗 和 生命周期 这两个主题展开的。</p>
+<h3 id="2-1-转化漏斗模型"><a href="#2-1-转化漏斗模型" class="headerlink" title="2.1 转化漏斗模型"></a>2.1 转化漏斗模型</h3><p>坦白的讲，相比其他互联网产品（例如电商、OTA等），互金的转化模型相对简单得多。抛开一些非核心业务功能，如投资课程、投资资讯新闻等，其实互金的转化漏斗只有简单的几步而已：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-eedb3ba82ed23e71.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>从渠道投放到下载，我们需要关注下载转化率以及 CPA (Cost Per Acquisition)；对于下载到首投，需要关注投资转化率；对于首投后的复投闭环，我们需要关注复投的比率以及 ARPU (Average Revenue Per User)；还有流失召回期的用户，需要关注召回的比率与效率。当然，上面的解释对于一个有经验的运营都是多余的，做到上述的这些成果只是一个开始。要实现精细化的运营，需要关注的转化率也需要拆分细化。</p>
+<p>很显然，用户在投资之前的可能路径不止一条，他可能从站内活动去到了投资页，也可能从我们提供的咨询内容引导到了投资页，还可能通过促活的短信直接跳转到了App内。因此，上述的多条等价路径其实都需要通过转化漏斗监控起来。</p>
+<h4 id="A-等价路径模型"><a href="#A-等价路径模型" class="headerlink" title="A. 等价路径模型"></a>A. 等价路径模型</h4><p>我们一起来梳理下场景的等价路径有哪些呢？首先是正常的投资路径，一个用户可能刚刚发了工资，他怀着投资意愿来到我们的产品中，这时他的转化路径简单而直接：</p>
+<blockquote>
+<p>首页 -&gt; 产品详情页 -&gt; 订单/支付页 -&gt; 投资成功</p>
+</blockquote>
+<p>如果一个用户并无强烈投资意愿，但对站内的资讯内容感兴趣并被转化，那他的转化路径将是：</p>
+<blockquote>
+<p>站外资讯推广/站内资讯hub -&gt; 产品详情页 -&gt; 订单/支付页 -&gt; 投资成功</p>
+</blockquote>
+<p>如果一个用户在平台上长期无持有金额也长期无投资行为，这时看到了我们的市场推送或者广告平台推广来到站内，被活动奖励或者补贴重新激起投资欲望，他的转化路径将是：</p>
+<blockquote>
+<p>推广链接点击 -&gt; 推广落地页 -&gt; 补贴/奖励领取成功 -&gt; 产品详情页 -&gt; 订单/支付页 -&gt; 投资成功</p>
+</blockquote>
+<p>以上三种路径其实就是最常见也是覆盖了90%可能情况的转化路径，在实际工作中我们可能也只会同时关注2-3条这样的转化路径。总结归纳一下，可以抽象为：</p>
+<ul>
+<li><p>主线转化：上述第一种转化路径；</p>
+</li>
+<li><p>活跃转化：推送、补贴、签到等促活机制的转化路径，即上述第二种和第三种。</p>
+</li>
+</ul>
+<h4 id="B-分支路径模型"><a href="#B-分支路径模型" class="headerlink" title="B. 分支路径模型"></a>B. 分支路径模型</h4><p>用户在平台内除了投资之外，其他的转化路径可以统称为分支路径。根据平台业务的发散程度不同，分支路径的数量可多可少，这里就不展开讨论了。只讨论最常见的以拉新为目的的自传播场景。比如常见邀请好友返券的活动，那么此类用户的路径是：</p>
+<blockquote>
+<p>站内活动入口 -&gt; 活动详情页 -&gt; 完成活动任务 -&gt; 领取活动奖励</p>
+</blockquote>
+<p>而被邀请的用户的路径也需要关注：</p>
+<blockquote>
+<p>点击邀请链接 -&gt; 下载App -&gt; 完成注册开户</p>
+</blockquote>
+<p>总而言之，精细化的漏斗划分，不仅能帮助运营提升效率和投入产出比，也能帮助运营在活动进行中随时监测效果，及时对问题转化节点做相应的解决处理。</p>
+<h3 id="2-2-用户生命周期模型"><a href="#2-2-用户生命周期模型" class="headerlink" title="2.2 用户生命周期模型"></a>2.2 用户生命周期模型</h3><p>不管是哪个行业的用户运营同学，对于”用户生命周期“这几个字一定都是听到耳朵长茧。人人都知道，生命周期的建立和实施，对于用户运营有着至关重要的作用；但真的要搭建一套成熟的用户运营体系，并将现有用户对号入座，甚至实现对新用户的投资期望进行预测，都要从最基本生命周期模型做起。</p>
+<p>先上一张被一万篇文章用烂了的一张图吧，这应该是出自一个数据分析机构的著名图表。它简洁地概括了大部分互联网产品用户的大致生命周期。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-cef933afca96d6c4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>引入期、成长期、成熟期、休眠期（或称衰退期）、流失期。这就是公认的用户生命周期的 5 个阶段。理解这几个阶段的划分并不复杂，但对于很多运营来说头疼的是如何划分、根据什么样的数据指标划分？我的理解是，按照用户在每个阶段的 <strong>期望行为完成度</strong> 划分。如下图：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-5e1eb978843140b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>对于生命周期前半阶段的用户，划分起来非常简单，主要考察用户是否完成注册、绑卡、实名、首投等任务即可。但对于后续的几个阶段，需要具体结合平台产品类型分布、主打客户群体，通过不停地实践-迭代才能找到合适的用户划分阈值。</p>
+<h3 id="2-3-第三个模型？"><a href="#2-3-第三个模型？" class="headerlink" title="2.3 第三个模型？"></a>2.3 第三个模型？</h3><p>在很多其他文章中看到，很多人试图从用户的视角对互金运营模型进行拆解，他们从用户来到互金平台的目的和诉求出发，将用户在平台上需完成的任务分层，从核心任务（得到收益）到边缘任务（分享、领优惠）等。在我看来，这样的分类可能对于运营同学来说，理论意义大于实践意义。在日常工作中，还是需要依赖上述两个基本模型指导工作，但从用户的角度看自己每一个运营手段和策略，也是对运营最终目的的一个澄清和提醒。</p>
+<h3 id="3-Summary"><a href="#3-Summary" class="headerlink" title="3. Summary"></a>3. Summary</h3><p>讨论了这么多用户增长与数据模型的理论，其实回归到互金运营的本质，坦白的讲其实就是：<strong>在毛利无法有效提高的时代，互金平台只有通过提升用户投资频次、降低用户流失率两个手段来生存下去</strong>。而模型和数据本身，只是运营同学的工具之一，他们已经知道需要对什么样的用户做什么样的运营，数据能够告诉他们的只是什么时候（when）和哪些用户（who）。</p>
+<p>以上</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#growth">
+    <span class="tag-code">growth</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2018/07/21/mle-mle-bayes/">
+        
+          最大似然估计、最大后验概率与贝叶斯估计
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Intro"><span class="toc-nav-text">Intro</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-互金（理财）的用户运营"><span class="toc-nav-text">1. 互金（理财）的用户运营</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-互金用户运营需要看哪些数据？"><span class="toc-nav-text">1.1 互金用户运营需要看哪些数据？</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-1-1-用户行为数据："><span class="toc-nav-text">1.1.1 用户行为数据：</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-1-2-用户属性数据："><span class="toc-nav-text">1.1.2 用户属性数据：</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-1-3-交易数据："><span class="toc-nav-text">1.1.3 交易数据：</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-互金用户增长的基本策略"><span class="toc-nav-text">1.2 互金用户增长的基本策略</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-两大互金用户增长模型"><span class="toc-nav-text">2. 两大互金用户增长模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-转化漏斗模型"><span class="toc-nav-text">2.1 转化漏斗模型</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#A-等价路径模型"><span class="toc-nav-text">A. 等价路径模型</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#B-分支路径模型"><span class="toc-nav-text">B. 分支路径模型</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-用户生命周期模型"><span class="toc-nav-text">2.2 用户生命周期模型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-3-第三个模型？"><span class="toc-nav-text">2.3 第三个模型？</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-Summary"><span class="toc-nav-text">3. Summary</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2018/05/09/fintech-user-growth-model/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
