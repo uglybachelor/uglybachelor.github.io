@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      主成分分析（Principle Component Analysis） | Hexo
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+    css('css/plugins/gitment.css')
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+    <script src="/js/qrious.js"></script>
+  
+  
+    <script src="/js/gitment.js"></script>
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>Hexo</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/project/" class="item-link">Projects</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/project/" class="menu-link">Projects</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>主成分分析（Principle Component Analysis）</h2>
+  <p class="post-date">2019-01-09</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><blockquote>
+<p><em>主成分分析（PCA）是现代数据分析的主要方法之一，它被广泛使用但其内在机制仍不为太多人理解。这篇文章的主旨就是厘清并解释其原理。这篇教程不仅能帮助建立起对 PCA 原理的直觉理解，还希望能够澄清其内在的数学原理。因此，这是一篇同时用通俗语言与数学语言解释 PCA 的教程。希望不同层次的读者，都能通过本文获得对 PCA 的原理和应用更好的理解。</em></p>
+</blockquote>
+<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p>主成分分析（PCA）曾被称为应用线性代数领域中最有价值的结论。PCA 被广泛应用于多种形式的分析中，从神经科学到计算机视觉，因为它是一个足够简单的<strong>非参数</strong>方法，并能够从复杂的数据集中提取出最相关的信息。PCA 方法本身，可以再无需其他处理的情况下，将一个复杂数据集降至更低维度，以揭示其潜在的单纯的规律。</p>
+<p>下面我们先从一个简单的例子开始，从直觉上解释下 PCA 的目的。</p>
+<h2 id="2-一个简单的例子"><a href="#2-一个简单的例子" class="headerlink" title="2. 一个简单的例子"></a>2. 一个简单的例子</h2><p>假设我们现在是一名实验员，需要通过实验观测的数据，发现系统中的一些现象。实验的形式如下图示（Figure 1），一个无质量无摩擦的振动的弹簧。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-901c181e67214cee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>我们的观测方式，是在弹簧周围放置了三个摄影机 a，b，c。学过物理的同学都知道，假设弹簧振动的轴是 x 的话，那么弹簧的振动公式一定可以由 x 以及时间 t 的组合表示出来。换句话说，系统潜在的规律可以由一个单变量 x 表达。那么，现在的问题在于，我们如何将摄影机 a，b，c 得到的数据，转换成 x 的表达式呢？</p>
+<p>之所以面临这个问题，是因为 a，b，c 三个摄影机并不一定是按三位空间的 x，y，z 轴排列的，可能是任何的轴，三个摄影机也不一定是 90 度的夹角。并且在真实的实验数据中，我们还会遇到“噪音”（noise），使得得到的数据集并不完美。因此我们需要想办法解决这些问题，通过主成分分析的方法最终得到 x。</p>
+<h2 id="3-基变换"><a href="#3-基变换" class="headerlink" title="3. 基变换"></a>3. 基变换</h2><p>主成分分析通过找到最优的基（basis）来重新表达一个有噪音的不完美的数据集。这些新的基可以过滤噪音，并揭示一些潜在的规律。在我们的例子中，我们希望通过 PCA 来揭示：x 轴的基 $x$ 才是表达系统最重要的维度。</p>
+<h3 id="3-1-一个朴素的基"><a href="#3-1-一个朴素的基" class="headerlink" title="3.1 一个朴素的基"></a>3.1 一个朴素的基</h3><p>对于一个数据集来说，测量（measurement）类型的数目，通常微微数据集的<strong>维度</strong>。在我们的例子里，每个摄像机提供一个 2 维的图像，因此一共有 6 个维度。通常来讲，每个数据点（data sample）都是一个 m 维的向量，m 就是整个数据集的维度。每个数据点代表的向量都存在于一个 m 维的向量空间中，而每个向量都是由一组单位长度的<a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E4%BA%A4%E8%A7%84%E8%8C%83%E6%80%A7" target="_blank" rel="noopener">正交规范（orthonormal）</a>的基向量的线性变换而成。比如一个最简单朴素的基B$就是<a href="https://zh.wikipedia.org/zh-cn/%E5%96%AE%E4%BD%8D%E7%9F%A9%E9%99%A3" target="_blank" rel="noopener">单位矩阵</a> $I$：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-4a1fe2ff12f8314f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="单位矩阵"></p>
+<p>B$的每一行就是一个基向量 $b_{i}$。</p>
+<p>回到我们的例子，每个数据点可以表示成下面这样：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-59ac4cc5faa9382a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>其中每个值其实都是 $B$中基的系数。</p>
+<h3 id="3-2-基变换"><a href="#3-2-基变换" class="headerlink" title="3.2 基变换"></a>3.2 基变换</h3><p>PCA 中进行所谓基变换的目的，主要在于找到一组更好的基，能够由原本的基通过线性变换表示出来。</p>
+<p>上面一句话中有一个需要注意的词：线性（linear）。这其实是 PCA 的一个重要的假设，它极大地简化了问题，具体地讲：（1）线性的假设限制了可能的基的数量；（2）迎合了数据集连续性（continuity）的假设。</p>
+<blockquote>
+<p>注：复杂的系统通常都是非线性的，并且他们最显著的特征通常更是系统非线性的产物。但局部的线性近似通常已经是足够好的近似。</p>
+</blockquote>
+<p>现在我们有了 PCA 只是利用对基向量的线性组合，来重新表达数据集的假设后，可以进一步添加一些数学说明。假设 $X$ 和 $Y$ 是 $m*n$ 的矩阵，并可通过矩阵 $P$ 变换得到。$X$ 作为原始数据集，$Y$作为重新表达后的数据集。</p>
+<p>式 1：<br>$$PX = Y$$</p>
+<p>同时再做以下的定义：</p>
+<ul>
+<li>$p_{i}$ 是 $P$ 的行（row）；</li>
+<li>$x_{i}$ 是 $X$ 的列（column）；</li>
+<li>$y_{i}$ 是 $Y$ 的列（column）。</li>
+</ul>
+<p>式（1）代表的就是基变换。可以理解为：矩阵 $P$ 通过空间旋转和拉伸的方式，转换 $X$ 到 $Y$。或也可以理解为：$P$ 的行向量，是表达 $X$ 的新的基向量。后一种表达方式可以展开为：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-902f646e1efc393d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>这种表达方式，可以进一步理解为：$y_{i}$ 是在新基 $P$ 上的投影。</p>
+<h3 id="3-3-仍待解决的问题"><a href="#3-3-仍待解决的问题" class="headerlink" title="3.3 仍待解决的问题"></a>3.3 仍待解决的问题</h3><p>前面通过假设“线性”，我们将问题归纳为了  找到合适的“基变换”。上面提到的 ${p_{1},…,p_{m}}$ 其实就是我们要找的X$的主成分。那么剩下的问题就是如何找到 $P$？以及我们想让Y$呈现什么样的特性？要回答这些问题，我们需要作出“线性”之外的更多的假设。</p>
+<h2 id="4-引入方差"><a href="#4-引入方差" class="headerlink" title="4. 引入方差"></a>4. 引入方差</h2><p>之前我们讲到了数据集可能存在噪声，事实上在一个线性的系统里，最大的两个问题中，一个是噪声，另一个是冗余（redundancy）。</p>
+<h3 id="4-1-噪声"><a href="#4-1-噪声" class="headerlink" title="4.1 噪声"></a>4.1 噪声</h3><p>低噪声是任何数据分析的前提。噪声没有一个通用的测量标准，通常可以用信噪比（SNR）来表示数据的噪声大小。</p>
+<p>$$SNR = \frac{\sigma^{2}<em>{signal}}{\sigma^{2}</em>{noise}}$$</p>
+<p>加入我们将某一个摄像机得到的数据可视化，多半会是如下图样，其中噪音的存在导致了分布的“椭圆”形，如果是毫无噪音的数据集，将会是一条直线。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-0905cce80866ae4a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<h3 id="4-2-冗余性"><a href="#4-2-冗余性" class="headerlink" title="4.2 冗余性"></a>4.2 冗余性</h3><p>冗余性比较不大好处理，在我们弹簧的例子中，如果摄像机设置的不合理就会造成很大的冗余。下图是冗余性的分布示例：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-1851628f426095e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>在最右的分布里，可以看出两个特征是完全相关（correlated）的，因此存在极大的冗余性，而最左边的分布中，两个特征完全没有可辨别的相关性，则完全不存在冗余。</p>
+<p>在实际数据集中，冗余通常表现在比如 A、B 两个特征都是某个长度，只是由不同单位表示；或两个特征都体现用户的购买力等等。这种情况下，都需要通过 feature engineering 减少特征的数量。</p>
+<h3 id="4-3-协方差矩阵"><a href="#4-3-协方差矩阵" class="headerlink" title="4.3 协方差矩阵"></a>4.3 协方差矩阵</h3><p>从上一节可以看到，SNR 完全是由方差计算  得到的。一个简单的得到数据集冗余成都的方式，就是计算整个数据集的“方差”，也就是<a href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E6%96%B9%E5%B7%AE" target="_blank" rel="noopener">协方差</a>。</p>
+<p>假设有两个特征 A 和 B：</p>
+<p>$$A = {a_{1}, … a_{n}} , B = {b_{1}, … b_{n}}$$</p>
+<p>那么 A 和 B 的协方差就是 ：</p>
+<p>$$cov(A, B)  = &lt;a_{i}b_{i}&gt;_{i}$$</p>
+<p><em>注：$&lt;·&gt;</em>{i}$表示以i$为索引的平均值。_</p>
+<ul>
+<li>如果 $cov(A, B) = 0$，那么 A 与 B 则完全不相关；</li>
+<li>如果 $cov(A, B) = \sigma_{A}$，那么 A 与 B 完全一致。</li>
+</ul>
+<p>接下来可以假设一个数据集，以矩阵X$的形式表现。那么下面的式子就很值得探讨了：</p>
+<p>$$S_{X} = \frac{1}{n-1} XX^{T}$$</p>
+<p>$XX^{T}$ 这个表达式非常有意思，仔细想一想就会发现，它的第 $ij$ 个元素，就是 $X$ 的第 $i$ 个特征与第 $j$ 个特征的点积（dot product）。而 $S_{X}$ 这个 $m*m$ 的矩阵，其对角线上的元素，是每个特征的方差，而非对角线的元素，是每两个特征的协方差。因此 $S_{X}$<br>也称为“协方差矩阵”。</p>
+<p>承接之前的结论，要消除数据集的冗余，需要特征间的协方差尽可能小。因此，理想的协方差矩阵会是一个对角矩阵（diagonal matrix），也就是除了对角线上的元素其他都是 0 的矩阵。所以 PCA 要做的事情就是<strong>对角化（diagonalize）</strong>。</p>
+<h3 id="4-4-对角化"><a href="#4-4-对角化" class="headerlink" title="4.4 对角化"></a>4.4 对角化</h3><p>对角化有很多种实现方式，其中 PCA 选择的可能是最简单的方式。还记得我们把基变换中的新基命名为P$吗，PCA 假设 $P$ 首先是正交规范的，其次，PCA 假设使方差最大的轴，就是最重要的轴。为什么说这两个假设使得对角化简单呢，我们可以具象一下 PCA 的工作原理。</p>
+<p>PCA 首先会在m$维的空间里选择一个方向（或者说轴）使得X$的方差最大；然后根据正交规范的假设，PCA 只会在于第一个方向正交规范的情况下，选择第二个方向使得方差最大。然后一直重复直到m$个方向都被选出来了。这样的好处是使得整个解法都是可用线性代数的。</p>
+<h2 id="5-解法-1：协方差的特征向量"><a href="#5-解法-1：协方差的特征向量" class="headerlink" title="5. 解法 1：协方差的特征向量"></a>5. 解法 1：协方差的特征向量</h2><p>这个解法是基于“特征向量分解”的。假设数据集是X$，是一个m*n$的矩阵。其中m$是特征数量，n$是数据集大小。目标如下：</p>
+<blockquote>
+<p>找到一个正交规范的矩阵P$，使得 $S_{Y} = \frac{1}{n-1} YY^{T}$ 是对角化的，其中 $Y = PX$。而 $P$ 的行就是 $X$ 的主成分（principle component）。</p>
+</blockquote>
+<p>推演过程如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-69ebf50a3e4fd2ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>注意我们定义了一个新的矩阵 $A = XX_{T}$，为了运算方便。可以看出A$明显是个对称矩阵。下面就是奇迹发生的时刻了，也就是引入特征向量分解的时候。对于任何一个对称矩阵，都有：</p>
+<p>$$A = EDE_{T}$$</p>
+<p>其中 $D$ 是一个对角矩阵，而E$是A$的特征向量作为列向量组成的矩阵。那我们可以用这样的方式选择P$：让P$的每一行（注意不是列）都是 $XX_{T}$ 的特征向量，带回到上面的式子里，就能推出：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1394572-64060862a414ed14.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
+<p>所以呢，可以得出的 2 个结论是：</p>
+<ul>
+<li>$X$ 的主成分，就是 $XX_{T}$ 的特征向量，也就是 $P$ 的行向量。</li>
+<li>$S_{Y}$ 的第 $i$ 个对角线元素，就是 $X$ 在 $p_{i}$ 上的方差。</li>
+</ul>
+<p>本文先到这里就结束了，下一篇文章会详细地介绍下另一种更通用的解法：奇异值分解（SVD）。</p>
+<p><em>大致译自<a href="https://www.cs.princeton.edu/picasso/mats/PCA-Tutorial-Intuition_jp.pdf" target="_blank" rel="noopener">此篇论文</a>，也非常建议英语好的大家直接读原版。</em></p>
+<p>以上</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#machine learning">
+    <span class="tag-code">machine learning</span>
+  </a>
+
+  <a href="/tags#feature selection">
+    <span class="tag-code">feature selection</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+    
+      <a class="nav-right" href="/2019/03/06/hello-world/">
+        
+          Hello World
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+      <div class="money-like">
+        <div class="reward-btn">
+          赏
+          <span class="money-code">
+            <span class="alipay-code">
+              <div class="code-image"></div>
+              <b>使用支付宝打赏</b>
+            </span>
+            <span class="wechat-code">
+              <div class="code-image"></div>
+              <b>使用微信打赏</b>
+            </span>
+          </span>
+        </div>
+        <p class="notice">若你觉得我的文章对你有帮助，欢迎点击上方按钮对我打赏</p>
+      </div>
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+      <div class="qrcode">
+        <canvas id="share-qrcode"></canvas>
+        <p class="notice">扫描二维码，分享此文章</p>
+      </div>
+    
+    <!-- 二维码 END -->
+    
+      <!-- Gitment START -->
+      <div id="comments"></div>
+      <!-- Gitment END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-概述"><span class="toc-nav-text">1. 概述</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-一个简单的例子"><span class="toc-nav-text">2. 一个简单的例子</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-基变换"><span class="toc-nav-text">3. 基变换</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-1-一个朴素的基"><span class="toc-nav-text">3.1 一个朴素的基</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-2-基变换"><span class="toc-nav-text">3.2 基变换</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-3-仍待解决的问题"><span class="toc-nav-text">3.3 仍待解决的问题</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-引入方差"><span class="toc-nav-text">4. 引入方差</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-1-噪声"><span class="toc-nav-text">4.1 噪声</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-2-冗余性"><span class="toc-nav-text">4.2 冗余性</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-3-协方差矩阵"><span class="toc-nav-text">4.3 协方差矩阵</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-4-对角化"><span class="toc-nav-text">4.4 对角化</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#5-解法-1：协方差的特征向量"><span class="toc-nav-text">5. 解法 1：协方差的特征向量</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/01/09/pca-1/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+  <script>
+    var qr = new QRious({
+      element: document.getElementById('share-qrcode'),
+      value: document.location.href
+    });
+  </script>
+
+
+
+  <script>
+    var gitmentConfig = "yanm1ng";
+    if (gitmentConfig !== 'undefined') {
+      var gitment = new Gitment({
+        id: "主成分分析（Principle Component Analysis）",
+        owner: "yanm1ng",
+        repo: "yanm1ng.github.io",
+        oauth: {
+          client_id: "0f87e490e00ee3fd87ef",
+          client_secret: "4a9d2b148e7971c2201ad12131ce8bf8159ccd2e"
+        },
+        theme: {
+          render(state, instance) {
+            const container = document.createElement('div')
+            container.lang = "en-US"
+            container.className = 'gitment-container gitment-root-container'
+            container.appendChild(instance.renderHeader(state, instance))
+            container.appendChild(instance.renderEditor(state, instance))
+            container.appendChild(instance.renderComments(state, instance))
+            container.appendChild(instance.renderFooter(state, instance))
+            return container;
+          }
+        }
+      })
+      gitment.render(document.getElementById('comments'))
+    }
+  </script>
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
