@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head><meta name="generator" content="Hexo 3.8.0">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="yanm1ng&#39;s blog">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      Amateur Hour
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+</head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png">
+</div>
+
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <!-- <div class="logo"></div> -->
+      <span>Amateur Hour</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2></h2>
+  <p class="post-date">2019-04-17</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h1 id="Pandas分组与聚合"><a href="#Pandas分组与聚合" class="headerlink" title="Pandas分组与聚合"></a>Pandas分组与聚合</h1><h2 id="0-分组-groupby"><a href="#0-分组-groupby" class="headerlink" title="0.分组 (groupby)"></a>0.分组 (groupby)</h2><ul>
+<li>对数据集进行分组，然后对每组进行统计分析</li>
+<li>SQL能够对数据进行过滤，分组聚合</li>
+<li>pandas能利用groupby进行更加复杂的分组运算</li>
+<li>分组运算过程：split-&gt;apply-&gt;combine<ul>
+<li>拆分：进行分组的根据</li>
+<li>应用：每个分组运行的计算规则</li>
+<li>合并：把每个分组的计算结果合并起来</li>
+</ul>
+</li>
+</ul>
+<p><img src="./groupby/intro.png" alt></p>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">dict_obj = &#123;<span class="string">'key1'</span> : [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, </span><br><span class="line">                      <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'a'</span>],</span><br><span class="line">            <span class="string">'key2'</span> : [<span class="string">'one'</span>, <span class="string">'one'</span>, <span class="string">'two'</span>, <span class="string">'three'</span>,</span><br><span class="line">                      <span class="string">'two'</span>, <span class="string">'two'</span>, <span class="string">'one'</span>, <span class="string">'three'</span>],</span><br><span class="line">            <span class="string">'data1'</span>: np.random.randn(<span class="number">8</span>),</span><br><span class="line">            <span class="string">'data2'</span>: np.random.randn(<span class="number">8</span>)&#125;</span><br><span class="line">df_obj = pd.DataFrame(dict_obj)</span><br><span class="line">print(df_obj)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data1     data2 key1   key2</span><br><span class="line">0  0.974685 -0.672494    a    one</span><br><span class="line">1 -0.214324  0.758372    b    one</span><br><span class="line">2  1.508838  0.392787    a    two</span><br><span class="line">3  0.522911  0.630814    b  three</span><br><span class="line">4  1.347359 -0.177858    a    two</span><br><span class="line">5 -0.264616  1.017155    b    two</span><br><span class="line">6 -0.624708  0.450885    a    one</span><br><span class="line">7 -1.019229 -1.143825    a  three</span><br></pre></td></tr></table></figure>
+<h2 id="1-GroupBy对象：DataFrameGroupBy，SeriesGroupBy"><a href="#1-GroupBy对象：DataFrameGroupBy，SeriesGroupBy" class="headerlink" title="1. GroupBy对象：DataFrameGroupBy，SeriesGroupBy"></a>1. GroupBy对象：DataFrameGroupBy，SeriesGroupBy</h2><h3 id="1-1-分组操作"><a href="#1-1-分组操作" class="headerlink" title="1.1 分组操作"></a>1.1 分组操作</h3><blockquote>
+<p><code>groupby()进行分组，GroupBy对象没有进行实际运算，只是包含分组的中间数据</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>按列名分组：obj.groupby(‘label’)</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dataframe根据key1进行分组</span></span><br><span class="line">print(type(df_obj.groupby(<span class="string">'key1'</span>)))</span><br><span class="line"></span><br><span class="line"><span class="comment"># dataframe的 data1 列根据 key1 进行分组</span></span><br><span class="line">print(type(df_obj[<span class="string">'data1'</span>].groupby(df_obj[<span class="string">'key1'</span>])))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;class &apos;pandas.core.groupby.DataFrameGroupBy&apos;&gt;</span><br><span class="line">&lt;class &apos;pandas.core.groupby.SeriesGroupBy&apos;&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-分组运算"><a href="#1-2-分组运算" class="headerlink" title="1.2 分组运算"></a>1.2 分组运算</h3><blockquote>
+<p><code>对GroupBy对象进行分组运算/多重分组运算，如mean()</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>非数值数据不进行分组运算</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分组运算</span></span><br><span class="line">grouped1 = df_obj.groupby(<span class="string">'key1'</span>)</span><br><span class="line">print(grouped1.mean())</span><br><span class="line"></span><br><span class="line">grouped2 = df_obj[<span class="string">'data1'</span>].groupby(df_obj[<span class="string">'key1'</span>])</span><br><span class="line">print(grouped2.mean())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data1     data2</span><br><span class="line">key1                    </span><br><span class="line">a     0.437389 -0.230101</span><br><span class="line">b     0.014657  0.802114</span><br><span class="line">key1</span><br><span class="line">a    0.437389</span><br><span class="line">b    0.014657</span><br><span class="line">Name: data1, dtype: float64</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>size() 返回每个分组的元素个数</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># size</span></span><br><span class="line">print(grouped1.size())</span><br><span class="line">print(grouped2.size())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">key1</span><br><span class="line">a    5</span><br><span class="line">b    3</span><br><span class="line">dtype: int64</span><br><span class="line">key1</span><br><span class="line">a    5</span><br><span class="line">b    3</span><br><span class="line">dtype: int64</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-按自定义的key分组"><a href="#1-3-按自定义的key分组" class="headerlink" title="1.3 按自定义的key分组"></a>1.3 按自定义的key分组</h3><blockquote>
+<p><code>obj.groupby(self_def_key)</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>自定义的key可为列表或多层列表</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>obj.groupby([‘label1’, ‘label2’])-&gt;多层dataframe</code>  </p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按自定义key分组，列表</span></span><br><span class="line">self_def_key = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>]</span><br><span class="line">print(df_obj.groupby(self_def_key).size())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按自定义key分组，多层列表</span></span><br><span class="line">print(df_obj.groupby([df_obj[<span class="string">'key1'</span>], df_obj[<span class="string">'key2'</span>]]).size())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按多个列多层分组</span></span><br><span class="line">grouped2 = df_obj.groupby([<span class="string">'key1'</span>, <span class="string">'key2'</span>])</span><br><span class="line">print(grouped2.size())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多层分组按key的顺序进行</span></span><br><span class="line">grouped3 = df_obj.groupby([<span class="string">'key2'</span>, <span class="string">'key1'</span>])</span><br><span class="line">print(grouped3.mean())</span><br><span class="line"><span class="comment"># unstack可以将多层索引的结果转换成单层的dataframe</span></span><br><span class="line">print(grouped3.mean().unstack())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">0    1</span><br><span class="line">1    1</span><br><span class="line">2    1</span><br><span class="line">3    2</span><br><span class="line">4    1</span><br><span class="line">5    1</span><br><span class="line">7    1</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">key1  key2 </span><br><span class="line">a     one      2</span><br><span class="line">      three    1</span><br><span class="line">      two      2</span><br><span class="line">b     one      1</span><br><span class="line">      three    1</span><br><span class="line">      two      1</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">key1  key2 </span><br><span class="line">a     one      2</span><br><span class="line">      three    1</span><br><span class="line">      two      2</span><br><span class="line">b     one      1</span><br><span class="line">      three    1</span><br><span class="line">      two      1</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">               data1     data2</span><br><span class="line">key2  key1                    </span><br><span class="line">one   a     0.174988 -0.110804</span><br><span class="line">      b    -0.214324  0.758372</span><br><span class="line">three a    -1.019229 -1.143825</span><br><span class="line">      b     0.522911  0.630814</span><br><span class="line">two   a     1.428099  0.107465</span><br><span class="line">      b    -0.264616  1.017155</span><br><span class="line"></span><br><span class="line">          data1               data2          </span><br><span class="line">key1          a         b         a         b</span><br><span class="line">key2                                         </span><br><span class="line">one    0.174988 -0.214324 -0.110804  0.758372</span><br><span class="line">three -1.019229  0.522911 -1.143825  0.630814</span><br><span class="line">two    1.428099 -0.264616  0.107465  1.017155</span><br></pre></td></tr></table></figure>
+<h2 id="2-GroupBy对象支持迭代操作"><a href="#2-GroupBy对象支持迭代操作" class="headerlink" title="2. GroupBy对象支持迭代操作"></a>2. GroupBy对象支持迭代操作</h2><blockquote>
+<p><code>每次迭代返回一个元组 (group_name, group_data)</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>可用于分组数据的具体运算</code>  </p>
+</blockquote>
+<h3 id="2-1-单层分组"><a href="#2-1-单层分组" class="headerlink" title="2.1 单层分组"></a>2.1 单层分组</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单层分组，根据key1</span></span><br><span class="line"><span class="keyword">for</span> group_name, group_data <span class="keyword">in</span> grouped1:</span><br><span class="line">    print(group_name)</span><br><span class="line">    print(group_data)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">a</span><br><span class="line">      data1     data2 key1   key2</span><br><span class="line">0  0.974685 -0.672494    a    one</span><br><span class="line">2  1.508838  0.392787    a    two</span><br><span class="line">4  1.347359 -0.177858    a    two</span><br><span class="line">6 -0.624708  0.450885    a    one</span><br><span class="line">7 -1.019229 -1.143825    a  three</span><br><span class="line"></span><br><span class="line">b</span><br><span class="line">      data1     data2 key1   key2</span><br><span class="line">1 -0.214324  0.758372    b    one</span><br><span class="line">3  0.522911  0.630814    b  three</span><br><span class="line">5 -0.264616  1.017155    b    two</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-多层分组"><a href="#2-2-多层分组" class="headerlink" title="2.2 多层分组"></a>2.2 多层分组</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 多层分组，根据key1 和 key2</span></span><br><span class="line"><span class="keyword">for</span> group_name, group_data <span class="keyword">in</span> grouped2:</span><br><span class="line">    print(group_name)</span><br><span class="line">    print(group_data)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(&apos;a&apos;, &apos;one&apos;)</span><br><span class="line">      data1     data2 key1 key2</span><br><span class="line">0  0.974685 -0.672494    a  one</span><br><span class="line">6 -0.624708  0.450885    a  one</span><br><span class="line"></span><br><span class="line">(&apos;a&apos;, &apos;three&apos;)</span><br><span class="line">      data1     data2 key1   key2</span><br><span class="line">7 -1.019229 -1.143825    a  three</span><br><span class="line"></span><br><span class="line">(&apos;a&apos;, &apos;two&apos;)</span><br><span class="line">      data1     data2 key1 key2</span><br><span class="line">2  1.508838  0.392787    a  two</span><br><span class="line">4  1.347359 -0.177858    a  two</span><br><span class="line"></span><br><span class="line">(&apos;b&apos;, &apos;one&apos;)</span><br><span class="line">      data1     data2 key1 key2</span><br><span class="line">1 -0.214324  0.758372    b  one</span><br><span class="line"></span><br><span class="line">(&apos;b&apos;, &apos;three&apos;)</span><br><span class="line">      data1     data2 key1   key2</span><br><span class="line">3  0.522911  0.630814    b  three</span><br><span class="line"></span><br><span class="line">(&apos;b&apos;, &apos;two&apos;)</span><br><span class="line">      data1     data2 key1 key2</span><br><span class="line">5 -0.264616  1.017155    b  two</span><br></pre></td></tr></table></figure>
+<h2 id="3-GroupBy对象可以转换成列表或字典"><a href="#3-GroupBy对象可以转换成列表或字典" class="headerlink" title="3. GroupBy对象可以转换成列表或字典"></a>3. GroupBy对象可以转换成列表或字典</h2><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># GroupBy对象转换list</span></span><br><span class="line">print(list(grouped1))</span><br><span class="line"></span><br><span class="line"><span class="comment"># GroupBy对象转换dict</span></span><br><span class="line">print(dict(list(grouped1)))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[(&apos;a&apos;,       data1     data2 key1   key2</span><br><span class="line">0  0.974685 -0.672494    a    one</span><br><span class="line">2  1.508838  0.392787    a    two</span><br><span class="line">4  1.347359 -0.177858    a    two</span><br><span class="line">6 -0.624708  0.450885    a    one</span><br><span class="line">7 -1.019229 -1.143825    a  three), </span><br><span class="line">(&apos;b&apos;,       data1     data2 key1   key2</span><br><span class="line">1 -0.214324  0.758372    b    one</span><br><span class="line">3  0.522911  0.630814    b  three</span><br><span class="line">5 -0.264616  1.017155    b    two)]</span><br><span class="line"></span><br><span class="line">&#123;&apos;a&apos;:       data1     data2 key1   key2</span><br><span class="line">0  0.974685 -0.672494    a    one</span><br><span class="line">2  1.508838  0.392787    a    two</span><br><span class="line">4  1.347359 -0.177858    a    two</span><br><span class="line">6 -0.624708  0.450885    a    one</span><br><span class="line">7 -1.019229 -1.143825    a  three, </span><br><span class="line">&apos;b&apos;:       data1     data2 key1   key2</span><br><span class="line">1 -0.214324  0.758372    b    one</span><br><span class="line">3  0.522911  0.630814    b  three</span><br><span class="line">5 -0.264616  1.017155    b    two&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-1-按列分组、按数据类型分组"><a href="#3-1-按列分组、按数据类型分组" class="headerlink" title="3.1 按列分组、按数据类型分组"></a>3.1 按列分组、按数据类型分组</h3><p>示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 按列分组</span><br><span class="line">print(df_obj.dtypes)</span><br><span class="line"></span><br><span class="line"># 按数据类型分组</span><br><span class="line">print(df_obj.groupby(df_obj.dtypes, axis=1).size())</span><br><span class="line">print(df_obj.groupby(df_obj.dtypes, axis=1).sum())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">data1    float64</span><br><span class="line">data2    float64</span><br><span class="line">key1      object</span><br><span class="line">key2      object</span><br><span class="line">dtype: object</span><br><span class="line"></span><br><span class="line">float64    2</span><br><span class="line">object     2</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">    float64  object</span><br><span class="line">0  0.302191    a one</span><br><span class="line">1  0.544048    b one</span><br><span class="line">2  1.901626    a two</span><br><span class="line">3  1.153725  b three</span><br><span class="line">4  1.169501    a two</span><br><span class="line">5  0.752539    b two</span><br><span class="line">6 -0.173823    a one</span><br><span class="line">7 -2.163054  a three</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-其他分组方法"><a href="#3-2-其他分组方法" class="headerlink" title="3.2 其他分组方法"></a>3.2 其他分组方法</h3><p>示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">df_obj2 = pd.DataFrame(np.random.randint(1, 10, (5,5)),</span><br><span class="line">                       columns=[&apos;a&apos;, &apos;b&apos;, &apos;c&apos;, &apos;d&apos;, &apos;e&apos;],</span><br><span class="line">                       index=[&apos;A&apos;, &apos;B&apos;, &apos;C&apos;, &apos;D&apos;, &apos;E&apos;])</span><br><span class="line">df_obj2.ix[1, 1:4] = np.NaN</span><br><span class="line">print(df_obj2)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a    b    c    d  e</span><br><span class="line">A  7  2.0  4.0  5.0  8</span><br><span class="line">B  4  NaN  NaN  NaN  1</span><br><span class="line">C  3  2.0  5.0  4.0  6</span><br><span class="line">D  3  1.0  9.0  7.0  3</span><br><span class="line">E  6  1.0  6.0  8.0  1</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-通过字典分组"><a href="#3-3-通过字典分组" class="headerlink" title="3.3 通过字典分组"></a>3.3 通过字典分组</h3><p>示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 通过字典分组</span><br><span class="line">mapping_dict = &#123;&apos;a&apos;:&apos;Python&apos;, &apos;b&apos;:&apos;Python&apos;, &apos;c&apos;:&apos;Java&apos;, &apos;d&apos;:&apos;C&apos;, &apos;e&apos;:&apos;Java&apos;&#125;</span><br><span class="line">print(df_obj2.groupby(mapping_dict, axis=1).size())</span><br><span class="line">print(df_obj2.groupby(mapping_dict, axis=1).count()) # 非NaN的个数</span><br><span class="line">print(df_obj2.groupby(mapping_dict, axis=1).sum())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">C         1</span><br><span class="line">Java      2</span><br><span class="line">Python    2</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">   C  Java  Python</span><br><span class="line">A  1     2       2</span><br><span class="line">B  0     1       1</span><br><span class="line">C  1     2       2</span><br><span class="line">D  1     2       2</span><br><span class="line">E  1     2       2</span><br><span class="line"></span><br><span class="line">     C  Java  Python</span><br><span class="line">A  5.0  12.0     9.0</span><br><span class="line">B  NaN   1.0     4.0</span><br><span class="line">C  4.0  11.0     5.0</span><br><span class="line">D  7.0  12.0     4.0</span><br><span class="line">E  8.0   7.0     7.0</span><br></pre></td></tr></table></figure>
+<h3 id="3-4-通过函数分组，函数传入的参数为行索引或列索引"><a href="#3-4-通过函数分组，函数传入的参数为行索引或列索引" class="headerlink" title="3.4 通过函数分组，函数传入的参数为行索引或列索引"></a>3.4 通过函数分组，函数传入的参数为行索引或列索引</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过函数分组</span></span><br><span class="line">df_obj3 = pd.DataFrame(np.random.randint(<span class="number">1</span>, <span class="number">10</span>, (<span class="number">5</span>,<span class="number">5</span>)),</span><br><span class="line">                       columns=[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>],</span><br><span class="line">                       index=[<span class="string">'AA'</span>, <span class="string">'BBB'</span>, <span class="string">'CC'</span>, <span class="string">'D'</span>, <span class="string">'EE'</span>])</span><br><span class="line"><span class="comment">#df_obj3</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">group_key</span><span class="params">(idx)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">        idx 为列索引或行索引</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment">#return idx</span></span><br><span class="line">    <span class="keyword">return</span> len(idx)</span><br><span class="line"></span><br><span class="line">print(df_obj3.groupby(group_key).size())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 以上自定义函数等价于</span></span><br><span class="line"><span class="comment">#df_obj3.groupby(len).size()</span></span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1    1</span><br><span class="line">2    3</span><br><span class="line">3    1</span><br><span class="line">dtype: int64</span><br></pre></td></tr></table></figure>
+<h3 id="3-5-通过索引级别分组"><a href="#3-5-通过索引级别分组" class="headerlink" title="3.5 通过索引级别分组"></a>3.5 通过索引级别分组</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过索引级别分组</span></span><br><span class="line">columns = pd.MultiIndex.from_arrays([[<span class="string">'Python'</span>, <span class="string">'Java'</span>, <span class="string">'Python'</span>, <span class="string">'Java'</span>, <span class="string">'Python'</span>],</span><br><span class="line">                                     [<span class="string">'A'</span>, <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'B'</span>]], names=[<span class="string">'language'</span>, <span class="string">'index'</span>])</span><br><span class="line">df_obj4 = pd.DataFrame(np.random.randint(<span class="number">1</span>, <span class="number">10</span>, (<span class="number">5</span>, <span class="number">5</span>)), columns=columns)</span><br><span class="line">print(df_obj4)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据language进行分组</span></span><br><span class="line">print(df_obj4.groupby(level=<span class="string">'language'</span>, axis=<span class="number">1</span>).sum())</span><br><span class="line"><span class="comment"># 根据index进行分组</span></span><br><span class="line">print(df_obj4.groupby(level=<span class="string">'index'</span>, axis=<span class="number">1</span>).sum())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">language Python Java Python Java Python</span><br><span class="line">index         A    A      B    C      B</span><br><span class="line">0             2    7      8    4      3</span><br><span class="line">1             5    2      6    1      2</span><br><span class="line">2             6    4      4    5      2</span><br><span class="line">3             4    7      4    3      1</span><br><span class="line">4             7    4      3    4      8</span><br><span class="line"></span><br><span class="line">language  Java  Python</span><br><span class="line">0           11      13</span><br><span class="line">1            3      13</span><br><span class="line">2            9      12</span><br><span class="line">3           10       9</span><br><span class="line">4            8      18</span><br><span class="line"></span><br><span class="line">index   A   B  C</span><br><span class="line">0       9  11  4</span><br><span class="line">1       7   8  1</span><br><span class="line">2      10   6  5</span><br><span class="line">3      11   5  3</span><br><span class="line">4      11  11  4</span><br></pre></td></tr></table></figure>
+<h2 id="4-聚合-aggregation"><a href="#4-聚合-aggregation" class="headerlink" title="4. 聚合 (aggregation)"></a>4. 聚合 (aggregation)</h2><ul>
+<li>数组产生标量的过程，如mean()、count()等</li>
+<li>常用于对分组后的数据进行计算</li>
+</ul>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dict_obj = &#123;<span class="string">'key1'</span> : [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, </span><br><span class="line">                      <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'a'</span>],</span><br><span class="line">            <span class="string">'key2'</span> : [<span class="string">'one'</span>, <span class="string">'one'</span>, <span class="string">'two'</span>, <span class="string">'three'</span>,</span><br><span class="line">                      <span class="string">'two'</span>, <span class="string">'two'</span>, <span class="string">'one'</span>, <span class="string">'three'</span>],</span><br><span class="line">            <span class="string">'data1'</span>: np.random.randint(<span class="number">1</span>,<span class="number">10</span>, <span class="number">8</span>),</span><br><span class="line">            <span class="string">'data2'</span>: np.random.randint(<span class="number">1</span>,<span class="number">10</span>, <span class="number">8</span>)&#125;</span><br><span class="line">df_obj5 = pd.DataFrame(dict_obj)</span><br><span class="line">print(df_obj5)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data1  data2 key1   key2</span><br><span class="line">0      3      7    a    one</span><br><span class="line">1      1      5    b    one</span><br><span class="line">2      7      4    a    two</span><br><span class="line">3      2      4    b  three</span><br><span class="line">4      6      4    a    two</span><br><span class="line">5      9      9    b    two</span><br><span class="line">6      3      5    a    one</span><br><span class="line">7      8      4    a  three</span><br></pre></td></tr></table></figure>
+<h3 id="4-1-内置的聚合函数"><a href="#4-1-内置的聚合函数" class="headerlink" title="4.1 内置的聚合函数"></a>4.1 内置的聚合函数</h3><blockquote>
+<p><code>sum(), mean(), max(), min(), count(), size(), describe()</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).sum())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).max())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).min())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).mean())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).size())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).count())</span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).describe())</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">data1  data2</span><br><span class="line">key1              </span><br><span class="line">a        27     24</span><br><span class="line">b        12     18</span><br><span class="line"></span><br><span class="line">      data1  data2 key2</span><br><span class="line">key1                   </span><br><span class="line">a         8      7  two</span><br><span class="line">b         9      9  two</span><br><span class="line"></span><br><span class="line">      data1  data2 key2</span><br><span class="line">key1                   </span><br><span class="line">a         3      4  one</span><br><span class="line">b         1      4  one</span><br><span class="line"></span><br><span class="line">      data1  data2</span><br><span class="line">key1              </span><br><span class="line">a       5.4    4.8</span><br><span class="line">b       4.0    6.0</span><br><span class="line"></span><br><span class="line">key1</span><br><span class="line">a    5</span><br><span class="line">b    3</span><br><span class="line">dtype: int64</span><br><span class="line"></span><br><span class="line">      data1  data2  key2</span><br><span class="line">key1                    </span><br><span class="line">a         5      5     5</span><br><span class="line">b         3      3     3</span><br><span class="line"></span><br><span class="line">               data1     data2</span><br><span class="line">key1                          </span><br><span class="line">a    count  5.000000  5.000000</span><br><span class="line">     mean   5.400000  4.800000</span><br><span class="line">     std    2.302173  1.303840</span><br><span class="line">     min    3.000000  4.000000</span><br><span class="line">     25%    3.000000  4.000000</span><br><span class="line">     50%    6.000000  4.000000</span><br><span class="line">     75%    7.000000  5.000000</span><br><span class="line">     max    8.000000  7.000000</span><br><span class="line">b    count  3.000000  3.000000</span><br><span class="line">     mean   4.000000  6.000000</span><br><span class="line">     std    4.358899  2.645751</span><br><span class="line">     min    1.000000  4.000000</span><br><span class="line">     25%    1.500000  4.500000</span><br><span class="line">     50%    2.000000  5.000000</span><br><span class="line">     75%    5.500000  7.000000</span><br><span class="line">     max    9.000000  9.000000</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-可自定义函数，传入agg方法中"><a href="#4-2-可自定义函数，传入agg方法中" class="headerlink" title="4.2 可自定义函数，传入agg方法中"></a>4.2 可自定义函数，传入agg方法中</h3><blockquote>
+<p><code>grouped.agg(func)</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>func的参数为groupby索引对应的记录</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 自定义聚合函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">peak_range</span><span class="params">(df)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">        返回数值范围</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment">#print type(df) #参数为索引所对应的记录</span></span><br><span class="line">    <span class="keyword">return</span> df.max() - df.min()</span><br><span class="line"></span><br><span class="line">print(df_obj5.groupby(<span class="string">'key1'</span>).agg(peak_range))</span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).agg(<span class="keyword">lambda</span> df : df.max() - df.min()))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data1  data2</span><br><span class="line">key1              </span><br><span class="line">a         5      3</span><br><span class="line">b         8      5</span><br><span class="line"></span><br><span class="line">         data1     data2</span><br><span class="line">key1                    </span><br><span class="line">a     2.528067  1.594711</span><br><span class="line">b     0.787527  0.386341</span><br><span class="line">In [25]:</span><br></pre></td></tr></table></figure>
+<h3 id="4-3-应用多个聚合函数"><a href="#4-3-应用多个聚合函数" class="headerlink" title="4.3 应用多个聚合函数"></a>4.3 应用多个聚合函数</h3><p>同时应用多个函数进行聚合操作，使用函数列表</p>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 应用多个聚合函数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 同时应用多个聚合函数</span></span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).agg([<span class="string">'mean'</span>, <span class="string">'std'</span>, <span class="string">'count'</span>, peak_range])) <span class="comment"># 默认列名为函数名</span></span><br><span class="line"></span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).agg([<span class="string">'mean'</span>, <span class="string">'std'</span>, <span class="string">'count'</span>, (<span class="string">'range'</span>, peak_range)])) <span class="comment"># 通过元组提供新的列名</span></span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">data1                                data2                           </span><br><span class="line">          mean       std count peak_range      mean       std count peak_range</span><br><span class="line">key1                                                                          </span><br><span class="line">a     0.437389  1.174151     5   2.528067 -0.230101  0.686488     5   1.594711</span><br><span class="line">b     0.014657  0.440878     3   0.787527  0.802114  0.196850     3   0.386341</span><br><span class="line"></span><br><span class="line">         data1                               data2                          </span><br><span class="line">          mean       std count     range      mean       std count     range</span><br><span class="line">key1                                                                        </span><br><span class="line">a     0.437389  1.174151     5  2.528067 -0.230101  0.686488     5  1.594711</span><br><span class="line">b     0.014657  0.440878     3  0.787527  0.802114  0.196850     3  0.386341</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-对不同的列分别作用不同的聚合函数，使用dict"><a href="#4-4-对不同的列分别作用不同的聚合函数，使用dict" class="headerlink" title="4.4 对不同的列分别作用不同的聚合函数，使用dict"></a>4.4 对不同的列分别作用不同的聚合函数，使用dict</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 每列作用不同的聚合函数</span></span><br><span class="line">dict_mapping = &#123;<span class="string">'data1'</span>:<span class="string">'mean'</span>,</span><br><span class="line">                <span class="string">'data2'</span>:<span class="string">'sum'</span>&#125;</span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).agg(dict_mapping))</span><br><span class="line"></span><br><span class="line">dict_mapping = &#123;<span class="string">'data1'</span>:[<span class="string">'mean'</span>,<span class="string">'max'</span>],</span><br><span class="line">                <span class="string">'data2'</span>:<span class="string">'sum'</span>&#125;</span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).agg(dict_mapping))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data1     data2</span><br><span class="line">key1                    </span><br><span class="line">a     0.437389 -1.150505</span><br><span class="line">b     0.014657  2.406341</span><br><span class="line"></span><br><span class="line">         data1               data2</span><br><span class="line">          mean       max       sum</span><br><span class="line">key1                              </span><br><span class="line">a     0.437389  1.508838 -1.150505</span><br><span class="line">b     0.014657  0.522911  2.406341</span><br></pre></td></tr></table></figure>
+<h3 id="4-5-常用的内置聚合函数"><a href="#4-5-常用的内置聚合函数" class="headerlink" title="4.5 常用的内置聚合函数"></a>4.5 常用的内置聚合函数</h3><p><img src="./groupby/agg.png" alt></p>
+<h2 id="5-数据的分组运算"><a href="#5-数据的分组运算" class="headerlink" title="5. 数据的分组运算"></a>5. 数据的分组运算</h2><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">dict_obj = &#123;<span class="string">'key1'</span> : [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, </span><br><span class="line">                      <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'a'</span>, <span class="string">'a'</span>],</span><br><span class="line">            <span class="string">'key2'</span> : [<span class="string">'one'</span>, <span class="string">'one'</span>, <span class="string">'two'</span>, <span class="string">'three'</span>,</span><br><span class="line">                      <span class="string">'two'</span>, <span class="string">'two'</span>, <span class="string">'one'</span>, <span class="string">'three'</span>],</span><br><span class="line">            <span class="string">'data1'</span>: np.random.randint(<span class="number">1</span>, <span class="number">10</span>, <span class="number">8</span>),</span><br><span class="line">            <span class="string">'data2'</span>: np.random.randint(<span class="number">1</span>, <span class="number">10</span>, <span class="number">8</span>)&#125;</span><br><span class="line">df_obj = pd.DataFrame(dict_obj)</span><br><span class="line">print(df_obj)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按key1分组后，计算data1，data2的统计信息并附加到原始表格中，并添加表头前缀</span></span><br><span class="line">k1_sum = df_obj.groupby(<span class="string">'key1'</span>).sum().add_prefix(<span class="string">'sum_'</span>)</span><br><span class="line">print(k1_sum)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">data1  data2 key1   key2</span><br><span class="line">0      5      1    a    one</span><br><span class="line">1      7      8    b    one</span><br><span class="line">2      1      9    a    two</span><br><span class="line">3      2      6    b  three</span><br><span class="line">4      9      8    a    two</span><br><span class="line">5      8      3    b    two</span><br><span class="line">6      3      5    a    one</span><br><span class="line">7      8      3    a  three</span><br><span class="line"></span><br><span class="line">      sum_data1  sum_data2</span><br><span class="line">key1                      </span><br><span class="line">a            26         26</span><br><span class="line">b            17         17</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>聚合运算后会改变原始数据的形状，</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>如何保持原始数据的形状?</code>  </p>
+</blockquote>
+<h3 id="5-1-merge"><a href="#5-1-merge" class="headerlink" title="5.1 merge"></a>5.1 merge</h3><blockquote>
+<p><code>使用merge的外连接，比较复杂</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方法1，使用merge</span></span><br><span class="line">k1_sum_merge = pd.merge(df_obj, k1_sum, left_on=<span class="string">'key1'</span>, right_index=<span class="literal">True</span>)</span><br><span class="line">print(k1_sum_merge)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data1  data2 key1   key2  sum_data1  sum_data2</span><br><span class="line">0      5      1    a    one         26         26</span><br><span class="line">2      1      9    a    two         26         26</span><br><span class="line">4      9      8    a    two         26         26</span><br><span class="line">6      3      5    a    one         26         26</span><br><span class="line">7      8      3    a  three         26         26</span><br><span class="line">1      7      8    b    one         17         17</span><br><span class="line">3      2      6    b  three         17         17</span><br><span class="line">5      8      3    b    two         17         17</span><br></pre></td></tr></table></figure>
+<h3 id="5-2-transform"><a href="#5-2-transform" class="headerlink" title="5.2 transform"></a>5.2 transform</h3><blockquote>
+<p><code>transform的计算结果和原始数据的形状保持一致，</code>  </p>
+</blockquote>
+<blockquote>
+<p><code>如：grouped.transform(np.sum)</code>  </p>
+</blockquote>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方法2，使用transform</span></span><br><span class="line">k1_sum_tf = df_obj.groupby(<span class="string">'key1'</span>).transform(np.sum).add_prefix(<span class="string">'sum_'</span>)</span><br><span class="line">df_obj[k1_sum_tf.columns] = k1_sum_tf</span><br><span class="line">print(df_obj)</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">data1  data2 key1   key2 sum_data1 sum_data2           sum_key2</span><br><span class="line">0      5      1    a    one        26        26  onetwotwoonethree</span><br><span class="line">1      7      8    b    one        17        17        onethreetwo</span><br><span class="line">2      1      9    a    two        26        26  onetwotwoonethree</span><br><span class="line">3      2      6    b  three        17        17        onethreetwo</span><br><span class="line">4      9      8    a    two        26        26  onetwotwoonethree</span><br><span class="line">5      8      3    b    two        17        17        onethreetwo</span><br><span class="line">6      3      5    a    one        26        26  onetwotwoonethree</span><br><span class="line">7      8      3    a  three        26        26  onetwotwoonethree</span><br><span class="line">也可传入自定义函数，</span><br></pre></td></tr></table></figure>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 自定义函数传入transform</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">diff_mean</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">        返回数据与均值的差值</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">return</span> s - s.mean()</span><br><span class="line"></span><br><span class="line">print(df_obj.groupby(<span class="string">'key1'</span>).transform(diff_mean))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data1     data2 sum_data1 sum_data2</span><br><span class="line">0 -0.200000 -4.200000         0         0</span><br><span class="line">1  1.333333  2.333333         0         0</span><br><span class="line">2 -4.200000  3.800000         0         0</span><br><span class="line">3 -3.666667  0.333333         0         0</span><br><span class="line">4  3.800000  2.800000         0         0</span><br><span class="line">5  2.333333 -2.666667         0         0</span><br><span class="line">6 -2.200000 -0.200000         0         0</span><br><span class="line">7  2.800000 -2.200000         0         0</span><br></pre></td></tr></table></figure>
+<h2 id="6-groupby-apply-func"><a href="#6-groupby-apply-func" class="headerlink" title="6. groupby.apply(func)"></a>6. groupby.apply(func)</h2><h5 id="6-1-func函数也可以在各分组上分别调用，最后结果通过pd-concat组装到一起（数据合并）"><a href="#6-1-func函数也可以在各分组上分别调用，最后结果通过pd-concat组装到一起（数据合并）" class="headerlink" title="6.1 func函数也可以在各分组上分别调用，最后结果通过pd.concat组装到一起（数据合并）"></a>6.1 func函数也可以在各分组上分别调用，最后结果通过pd.concat组装到一起（数据合并）</h5><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">dataset_path = <span class="string">'./starcraft.csv'</span></span><br><span class="line">df_data = pd.read_csv(dataset_path, usecols=[<span class="string">'LeagueIndex'</span>, <span class="string">'Age'</span>, <span class="string">'HoursPerWeek'</span>, </span><br><span class="line">                                             <span class="string">'TotalHours'</span>, <span class="string">'APM'</span>])</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">top_n</span><span class="params">(df, n=<span class="number">3</span>, column=<span class="string">'APM'</span>)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">        返回每个分组按 column 的 top n 数据</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">return</span> df.sort_values(by=column, ascending=<span class="literal">False</span>)[:n]</span><br><span class="line"></span><br><span class="line">print(df_data.groupby(<span class="string">'LeagueIndex'</span>).apply(top_n))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">LeagueIndex   Age  HoursPerWeek  TotalHours       APM</span><br><span class="line">LeagueIndex                                                            </span><br><span class="line">1           2214            1  20.0          12.0       730.0  172.9530</span><br><span class="line">            2246            1  27.0           8.0       250.0  141.6282</span><br><span class="line">            1753            1  20.0          28.0       100.0  139.6362</span><br><span class="line">2           3062            2  20.0           6.0       100.0  179.6250</span><br><span class="line">            3229            2  16.0          24.0       110.0  156.7380</span><br><span class="line">            1520            2  29.0           6.0       250.0  151.6470</span><br><span class="line">3           1557            3  22.0           6.0       200.0  226.6554</span><br><span class="line">            484             3  19.0          42.0       450.0  220.0692</span><br><span class="line">            2883            3  16.0           8.0       800.0  208.9500</span><br><span class="line">4           2688            4  26.0          24.0       990.0  249.0210</span><br><span class="line">            1759            4  16.0           6.0        75.0  229.9122</span><br><span class="line">            2637            4  23.0          24.0       650.0  227.2272</span><br><span class="line">5           3277            5  18.0          16.0       950.0  372.6426</span><br><span class="line">            93              5  17.0          36.0       720.0  335.4990</span><br><span class="line">            202             5  37.0          14.0       800.0  327.7218</span><br><span class="line">6           734             6  16.0          28.0       730.0  389.8314</span><br><span class="line">            2746            6  16.0          28.0      4000.0  350.4114</span><br><span class="line">            1810            6  21.0          14.0       730.0  323.2506</span><br><span class="line">7           3127            7  23.0          42.0      2000.0  298.7952</span><br><span class="line">            104             7  21.0          24.0      1000.0  286.4538</span><br><span class="line">            1654            7  18.0          98.0       700.0  236.0316</span><br><span class="line">8           3393            8   NaN           NaN         NaN  375.8664</span><br><span class="line">            3373            8   NaN           NaN         NaN  364.8504</span><br><span class="line">            3372            8   NaN           NaN         NaN  355.3518</span><br></pre></td></tr></table></figure>
+<h3 id="6-2-产生层级索引：外层索引是分组名，内层索引是df-obj的行索引"><a href="#6-2-产生层级索引：外层索引是分组名，内层索引是df-obj的行索引" class="headerlink" title="6.2 产生层级索引：外层索引是分组名，内层索引是df_obj的行索引"></a>6.2 产生层级索引：外层索引是分组名，内层索引是df_obj的行索引</h3><p>示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># apply函数接收的参数会传入自定义的函数中</span><br><span class="line">print(df_data.groupby(&apos;LeagueIndex&apos;).apply(top_n, n=2, column=&apos;Age&apos;))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">LeagueIndex   Age  HoursPerWeek  TotalHours       APM</span><br><span class="line">LeagueIndex                                                            </span><br><span class="line">1           3146            1  40.0          12.0       150.0   38.5590</span><br><span class="line">            3040            1  39.0          10.0       500.0   29.8764</span><br><span class="line">2           920             2  43.0          10.0       730.0   86.0586</span><br><span class="line">            2437            2  41.0           4.0       200.0   54.2166</span><br><span class="line">3           1258            3  41.0          14.0       800.0   77.6472</span><br><span class="line">            2972            3  40.0          10.0       500.0   60.5970</span><br><span class="line">4           1696            4  44.0           6.0       500.0   89.5266</span><br><span class="line">            1729            4  39.0           8.0       500.0   86.7246</span><br><span class="line">5           202             5  37.0          14.0       800.0  327.7218</span><br><span class="line">            2745            5  37.0          18.0      1000.0  123.4098</span><br><span class="line">6           3069            6  31.0           8.0       800.0  133.1790</span><br><span class="line">            2706            6  31.0           8.0       700.0   66.9918</span><br><span class="line">7           2813            7  26.0          36.0      1300.0  188.5512</span><br><span class="line">            1992            7  26.0          24.0      1000.0  219.6690</span><br><span class="line">8           3340            8   NaN           NaN         NaN  189.7404</span><br><span class="line">            3341            8   NaN           NaN         NaN  287.8128</span><br></pre></td></tr></table></figure>
+<h3 id="6-3-禁止层级索引-group-keys-False"><a href="#6-3-禁止层级索引-group-keys-False" class="headerlink" title="6.3 禁止层级索引, group_keys=False"></a>6.3 禁止层级索引, group_keys=False</h3><p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(df_data.groupby(<span class="string">'LeagueIndex'</span>, group_keys=<span class="literal">False</span>).apply(top_n))</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">LeagueIndex   Age  HoursPerWeek  TotalHours       APM</span><br><span class="line">2214            1  20.0          12.0       730.0  172.9530</span><br><span class="line">2246            1  27.0           8.0       250.0  141.6282</span><br><span class="line">1753            1  20.0          28.0       100.0  139.6362</span><br><span class="line">3062            2  20.0           6.0       100.0  179.6250</span><br><span class="line">3229            2  16.0          24.0       110.0  156.7380</span><br><span class="line">1520            2  29.0           6.0       250.0  151.6470</span><br><span class="line">1557            3  22.0           6.0       200.0  226.6554</span><br><span class="line">484             3  19.0          42.0       450.0  220.0692</span><br><span class="line">2883            3  16.0           8.0       800.0  208.9500</span><br><span class="line">2688            4  26.0          24.0       990.0  249.0210</span><br><span class="line">1759            4  16.0           6.0        75.0  229.9122</span><br><span class="line">2637            4  23.0          24.0       650.0  227.2272</span><br><span class="line">3277            5  18.0          16.0       950.0  372.6426</span><br><span class="line">93              5  17.0          36.0       720.0  335.4990</span><br><span class="line">202             5  37.0          14.0       800.0  327.7218</span><br><span class="line">734             6  16.0          28.0       730.0  389.8314</span><br><span class="line">2746            6  16.0          28.0      4000.0  350.4114</span><br><span class="line">1810            6  21.0          14.0       730.0  323.2506</span><br><span class="line">3127            7  23.0          42.0      2000.0  298.7952</span><br><span class="line">104             7  21.0          24.0      1000.0  286.4538</span><br><span class="line">1654            7  18.0          98.0       700.0  236.0316</span><br><span class="line">3393            8   NaN           NaN         NaN  375.8664</span><br><span class="line">3373            8   NaN           NaN         NaN  364.8504</span><br><span class="line">3372            8   NaN           NaN         NaN  355.3518</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>apply可以用来处理不同分组内的缺失数据填充，填充该分组的均值。</code>  </p>
+</blockquote>
+</section>
+    <!-- Tags START -->
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/2019/03/28/axios-post-problem/">
+        <span class="nav-arrow">← </span>
+        
+          Express无法解析Axios的POST请求问题解决
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- No Comment -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Pandas分组与聚合"><span class="toc-nav-text">Pandas分组与聚合</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#0-分组-groupby"><span class="toc-nav-text">0.分组 (groupby)</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-GroupBy对象：DataFrameGroupBy，SeriesGroupBy"><span class="toc-nav-text">1. GroupBy对象：DataFrameGroupBy，SeriesGroupBy</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-分组操作"><span class="toc-nav-text">1.1 分组操作</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-分组运算"><span class="toc-nav-text">1.2 分组运算</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-3-按自定义的key分组"><span class="toc-nav-text">1.3 按自定义的key分组</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-GroupBy对象支持迭代操作"><span class="toc-nav-text">2. GroupBy对象支持迭代操作</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-单层分组"><span class="toc-nav-text">2.1 单层分组</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-多层分组"><span class="toc-nav-text">2.2 多层分组</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-GroupBy对象可以转换成列表或字典"><span class="toc-nav-text">3. GroupBy对象可以转换成列表或字典</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-1-按列分组、按数据类型分组"><span class="toc-nav-text">3.1 按列分组、按数据类型分组</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-2-其他分组方法"><span class="toc-nav-text">3.2 其他分组方法</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-3-通过字典分组"><span class="toc-nav-text">3.3 通过字典分组</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-4-通过函数分组，函数传入的参数为行索引或列索引"><span class="toc-nav-text">3.4 通过函数分组，函数传入的参数为行索引或列索引</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-5-通过索引级别分组"><span class="toc-nav-text">3.5 通过索引级别分组</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-聚合-aggregation"><span class="toc-nav-text">4. 聚合 (aggregation)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-1-内置的聚合函数"><span class="toc-nav-text">4.1 内置的聚合函数</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-2-可自定义函数，传入agg方法中"><span class="toc-nav-text">4.2 可自定义函数，传入agg方法中</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-3-应用多个聚合函数"><span class="toc-nav-text">4.3 应用多个聚合函数</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-4-对不同的列分别作用不同的聚合函数，使用dict"><span class="toc-nav-text">4.4 对不同的列分别作用不同的聚合函数，使用dict</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-5-常用的内置聚合函数"><span class="toc-nav-text">4.5 常用的内置聚合函数</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#5-数据的分组运算"><span class="toc-nav-text">5. 数据的分组运算</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#5-1-merge"><span class="toc-nav-text">5.1 merge</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#5-2-transform"><span class="toc-nav-text">5.2 transform</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#6-groupby-apply-func"><span class="toc-nav-text">6. groupby.apply(func)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#6-1-func函数也可以在各分组上分别调用，最后结果通过pd-concat组装到一起（数据合并）"><span class="toc-nav-text">6.1 func函数也可以在各分组上分别调用，最后结果通过pd.concat组装到一起（数据合并）</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#6-2-产生层级索引：外层索引是分组名，内层索引是df-obj的行索引"><span class="toc-nav-text">6.2 产生层级索引：外层索引是分组名，内层索引是df_obj的行索引</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#6-3-禁止层级索引-group-keys-False"><span class="toc-nav-text">6.3 禁止层级索引, group_keys=False</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'http://yoursite.com/2019/04/17/groupby/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', 'http://file.muyutech.com/error-img.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== 'http://file.muyutech.com/error-img.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2019 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    Theme by <a href="https://github.com/yanm1ng">yanm1ng</a>
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+<script src="/js/script.js"></script>
+  </body>
+</html>
