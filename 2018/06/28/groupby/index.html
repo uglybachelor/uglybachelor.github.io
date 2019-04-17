@@ -10,7 +10,7 @@
   
   <title>
     
-      Amateur Hour
+      Pandas分组与聚合 | Amateur Hour
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -114,8 +114,8 @@
 </header>
 
     <div id="article-banner">
-  <h2></h2>
-  <p class="post-date">2019-04-17</p>
+  <h2>Pandas分组与聚合</h2>
+  <p class="post-date">2018-06-28</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -123,10 +123,8 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><h1 id="Pandas分组与聚合"><a href="#Pandas分组与聚合" class="headerlink" title="Pandas分组与聚合"></a>Pandas分组与聚合</h1><h2 id="0-分组-groupby"><a href="#0-分组-groupby" class="headerlink" title="0.分组 (groupby)"></a>0.分组 (groupby)</h2><ul>
-<li>对数据集进行分组，然后对每组进行统计分析</li>
-<li>SQL能够对数据进行过滤，分组聚合</li>
-<li>pandas能利用groupby进行更加复杂的分组运算</li>
+    <section class="markdown-content"><h1 id="Pandas分组与聚合"><a href="#Pandas分组与聚合" class="headerlink" title="Pandas分组与聚合"></a>Pandas分组与聚合</h1><p>初学特征处理的时候被Pandas的groupby折磨了许久，特地汇集了当时整理的网上的材料，比较系统的说明了pandas的分组/聚合功能的常用特性。相比SQL，pandas能利用groupby进行更加复杂的分组运算。</p>
+<h2 id="0-分组-groupby"><a href="#0-分组-groupby" class="headerlink" title="0.分组 (groupby)"></a>0.分组 (groupby)</h2><ul>
 <li>分组运算过程：split-&gt;apply-&gt;combine<ul>
 <li>拆分：进行分组的根据</li>
 <li>应用：每个分组运行的计算规则</li>
@@ -300,19 +298,39 @@
 </section>
     <!-- Tags START -->
     
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#feature engineering">
+    <span class="tag-code">feature engineering</span>
+  </a>
+
+  <a href="/tags#feature selection">
+    <span class="tag-code">feature selection</span>
+  </a>
+
+      </div>
+    
     <!-- Tags END -->
     <!-- NAV START -->
     
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2019/03/28/axios-post-problem/">
+      <a class="nav-left" href="/2018/05/09/fintech-user-growth-model/">
         <span class="nav-arrow">← </span>
         
-          Express无法解析Axios的POST请求问题解决
+          互联网金融产品用户增长模型
         
       </a>
     
+    
+      <a class="nav-right" href="/2018/07/21/mle-mle-bayes/">
+        
+          最大似然估计、最大后验概率与贝叶斯估计
+        
+        <span class="nav-arrow"> →</span>
+      </a>
     
   </div>
 
@@ -344,7 +362,7 @@
 
 <script>
   (function () {
-    var url = 'http://yoursite.com/2019/04/17/groupby/';
+    var url = 'http://yoursite.com/2018/06/28/groupby/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
