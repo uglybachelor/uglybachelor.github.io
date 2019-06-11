@@ -10,7 +10,7 @@
   
   <title>
     
-      Express无法解析Axios的POST请求问题解决 | Amateur Hour
+      Jupyter Notebook 的 Pandas 进度条 | Amateur Hour
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -114,8 +114,8 @@
 </header>
 
     <div id="article-banner">
-  <h2>Express无法解析Axios的POST请求问题解决</h2>
-  <p class="post-date">2019-03-28</p>
+  <h2>Jupyter Notebook 的 Pandas 进度条</h2>
+  <p class="post-date">2019-06-11</p>
   <div class="arrow-down">
     <a href="javascript:;"></a>
   </div>
@@ -123,32 +123,23 @@
 <main class="app-body flex-box">
   <!-- Article START -->
   <article class="post-article">
-    <section class="markdown-content"><p>这段时间在捡起来前端，想自己写几个小应用。结果一开始就遇到非常匪夷所思的问题。Axios发的POST请求无法被Express直接解析。</p>
-<p>首先，来说一下这个问题出现的原因，归根结底，不管php、java亦或是node。想要在后台接收到POST的数据，都需要POST在发送时使用application/x-www-form-urlencoded，具体操作就是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xhr.setRequestHeader(&quot;content-type&quot;:&quot;application/x-www-form-urlencoded;charset=utf-8&quot;)</span><br></pre></td></tr></table></figure>
-<p>这应该是最常见的 POST 提交数据的方式了。浏览器的原生 <form> 表单，如果不设置 enctype 属性，那么最终就会以 application/x-www-form-urlencoded 方式提交数据。请求类似于下面这样</form></p>
-<blockquote>
-<p>POST <a href="https://link.zhihu.com/?target=http%3A//www.example.com/" target="_blank" rel="noopener">Example Domain</a> HTTP/1.1<br>Content-Type: application/x-www-form-urlencoded;charset=utf-8</p>
-</blockquote>
-<p>通过上面这种方式传值，默认是以表单形式的，所以express设置中是这样的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.use(bodyParser.urlencoded(&#123; extended: true</span><br><span class="line">&#125;));</span><br><span class="line">//这种方式设置的表单的post请求数据的格式化，同样适用于ajax添加application/x-www-form-urlencoded</span><br></pre></td></tr></table></figure>
-<p>可惜，axios默认的Content-type设置的为application/json，通过这种方式发送的数据后台无法通过正常方式获取（原理就不解释了，反正我也不懂）</p>
-<p>java和php可以获取到对应的request原始流数据获取到对应的值并将其序列化</p>
-<p>但是node怎么办？</p>
-<p>express中使用的是body-parser去格式化前台传来的数据，归根结底直接在相关服务中设置<br>app.use(bodyParser.json())即可，具体实现代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//server.js</span><br><span class="line">var express = require(&quot;express&quot;)</span><br><span class="line">var app = express(); var bodyParser = require(&quot;body-parser&quot;) app.use(bodyParser.urlencoded(&#123; extended: true</span><br><span class="line">&#125;));</span><br><span class="line"></span><br><span class="line">//在原有的基础上加上下面代码即可</span><br><span class="line">app.use(bodyParser.json()) app.listen(3000)</span><br></pre></td></tr></table></figure>
+    <section class="markdown-content"><p>在 Jupyter Notebook 里，经常会遇到数据集很大，某一步处理需要很久的情况。在这种情况下，有时很难区分 notebook 是挂了还是 hanging，或是还在正常运行。</p>
+<p>我也被这个问题困扰了很久，最近找到了一个小工具很好的解决了这个问题，这个工具就是 <a href="[GitHub - tqdm/tqdm: A Fast, Extensible Progress Bar for Python and CLI](https://github.com/tqdm/tqdm">tqdm</a>)。它其实是一个 python 通用的进度条工具，但最近对 pandas 做了专门的适配。下面举个栗子来看下怎么用，其实也非常简单。</p>
+<p>假设现有一个巨大的数据集 <code>df</code>，数据集有个特征是时间特征，但目前是字符串而非 pandas 的 <code>datetime</code>类型，我需要用 apply 方法处理。如果不需要进度条，那很简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># convert function</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_to_datetime</span><span class="params">(t)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> pd.to_datetime(t, format=<span class="string">'%Y%m%d'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># deploy convert</span></span><br><span class="line">df.Date.apply(convert_to_datetime)</span><br></pre></td></tr></table></figure>
+<p>现在通过引入 tqdm 包的方式，就可以看到进度条：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line">tqdm.pandas()</span><br><span class="line"></span><br><span class="line"><span class="comment"># convert function</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_to_datetime</span><span class="params">(t)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> pd.to_datetime(t, format=<span class="string">'%Y%m%d'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># deploy convert</span></span><br><span class="line">df.Date.progress_apply(convert_to_datetime)</span><br></pre></td></tr></table></figure>
+<p>可以看到就是把 apply 方法改成了 profress_apply 而已，这样就可以看到如下的进度条效果了：</p>
+<p><img src="https://s2.ax1x.com/2019/06/11/Vg0OGq.png" alt="progress_bar"></p>
+<p>以上。</p>
 </section>
     <!-- Tags START -->
     
       <div class="tags">
         <span>Tags:</span>
         
-  <a href="/tags#nodejs">
-    <span class="tag-code">nodejs</span>
-  </a>
-
-  <a href="/tags#front-end">
-    <span class="tag-code">front-end</span>
+  <a href="/tags#pandas">
+    <span class="tag-code">pandas</span>
   </a>
 
       </div>
@@ -159,20 +150,13 @@
   <div class="nav-container">
     <!-- reverse left and right to put prev and next in a more logic postition -->
     
-      <a class="nav-left" href="/2019/01/09/pca-1/">
+      <a class="nav-left" href="/2019/03/28/axios-post-problem/">
         <span class="nav-arrow">← </span>
         
-          主成分分析（Principle Component Analysis）
+          Express无法解析Axios的POST请求问题解决
         
       </a>
     
-    
-      <a class="nav-right" href="/2019/06/11/pandas-progress-bar/">
-        
-          Jupyter Notebook 的 Pandas 进度条
-        
-        <span class="nav-arrow"> →</span>
-      </a>
     
   </div>
 
@@ -204,7 +188,7 @@
 
 <script>
   (function () {
-    var url = 'http://yoursite.com/2019/03/28/axios-post-problem/';
+    var url = 'http://yoursite.com/2019/06/11/pandas-progress-bar/';
     var banner = ''
     if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
       $('#article-banner').css({
