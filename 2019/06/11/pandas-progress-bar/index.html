@@ -131,6 +131,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line">tqdm.pandas()</span><br><span class="line"></span><br><span class="line"><span class="comment"># convert function</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_to_datetime</span><span class="params">(t)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> pd.to_datetime(t, format=<span class="string">'%Y%m%d'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># deploy convert</span></span><br><span class="line">df.Date.progress_apply(convert_to_datetime)</span><br></pre></td></tr></table></figure>
 <p>可以看到就是把 apply 方法改成了 profress_apply 而已，这样就可以看到如下的进度条效果了：</p>
 <p><img src="https://s2.ax1x.com/2019/06/11/Vg0OGq.png" alt="progress_bar"></p>
+<p>如果想要更好看的进度条，可以把引入 tqdm 包的代码改成 <code>from tqdm.auto import tqdm</code>。</p>
 <p>以上。</p>
 </section>
     <!-- Tags START -->
